@@ -2,3 +2,8 @@
 .quarto/
 *_files/
 __pycache__/
+/index.pdf
+*.html
+!_extensions/**/*.html
+/.quarto/
+**/*.quarto_ipynb

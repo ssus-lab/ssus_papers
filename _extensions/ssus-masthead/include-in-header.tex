@@ -31,15 +31,19 @@
   BoldFont    = *-ExtraBold,
   BoldItalicFont = *-ExtraBoldItalic,
 ]
-% IBM Plex Mono ships in TeX Live (ibmplex); SemiBold is its 600 weight
+% IBM Plex Mono vendored beside Libre Franklin (OFL); SemiBold is its 600
 \setmonofont{IBMPlexMono}[
-  UprightFont = IBMPlexMono-Regular,
-  BoldFont    = IBMPlexMono-SemiBold,
+  Path        = _extensions/ssus-masthead/assets/fonts/,
+  Extension   = .ttf,
+  UprightFont = *-Regular,
+  BoldFont    = *-SemiBold,
 ]
 % Letter-spaced mono, for the masthead series line (mock: .13em)
 \newfontfamily\ssusmonoLS{IBMPlexMono}[
-  UprightFont = IBMPlexMono-Regular,
-  BoldFont    = IBMPlexMono-SemiBold,
+  Path        = _extensions/ssus-masthead/assets/fonts/,
+  Extension   = .ttf,
+  UprightFont = *-Regular,
+  BoldFont    = *-SemiBold,
   LetterSpace = 15,
 ]
 

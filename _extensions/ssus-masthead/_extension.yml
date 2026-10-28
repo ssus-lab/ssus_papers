@@ -1,6 +1,6 @@
 title: SSUS working-paper masthead format
 author: Eli Knaap
-version: 0.0.1
+version: 0.0.2
 quarto-required: ">=1.4.11"
 # Built from the hikmah core (Andrew Heiss, andrewheiss/hikmah-academic-quarto
 # v0.0.7, MIT): include-in-header.tex and the before-body/title partials are

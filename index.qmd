@@ -1,0 +1,21 @@
+---
+title: "A working paper specimen"
+author:
+  - name: Eli Knaap
+    affiliations:
+      - Department of Urban Planning and Public Policy, University of California, Irvine
+abstract: "One paragraph set in both masthead targets, exercising the type, the series line, and the footer rule."
+keywords: [specimen, masthead]
+format: ssus-masthead-pdf
+---
+
+The masthead carries the working-paper identity; the body demonstrates the
+type it governs — *italic*, **bold** (ExtraBold, the display weight), `code`
+set in IBM Plex Mono, and a footnote[^1].
+
+[^1]: Footnotes set small in Libre Franklin.
+
+| Surface | Set in |
+|---|---|
+| Title | Libre Franklin ExtraBold |
+| Series line | IBM Plex Mono, letter-spaced |

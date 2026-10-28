@@ -6,7 +6,18 @@
    and footer lines.
    ------------------------------------------------------------------ */
 
-@import url("https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,400;0,600;0,800;1,400;1,600;1,800&family=IBM+Plex+Mono:wght@400;500;600&display=swap");
+/* Vendored OFL fonts, both families in assets/fonts/ with their licenses.
+   Quarto references this css in place from _extensions/ssus-masthead/, so
+   the urls resolve beside it — no web fonts, nothing fetched at view time. */
+@font-face { font-family: "Libre Franklin"; font-style: normal; font-weight: 400; font-display: swap; src: url("assets/fonts/LibreFranklin-Regular.ttf") format("truetype"); }
+@font-face { font-family: "Libre Franklin"; font-style: italic; font-weight: 400; font-display: swap; src: url("assets/fonts/LibreFranklin-Italic.ttf") format("truetype"); }
+@font-face { font-family: "Libre Franklin"; font-style: normal; font-weight: 600; font-display: swap; src: url("assets/fonts/LibreFranklin-SemiBold.ttf") format("truetype"); }
+@font-face { font-family: "Libre Franklin"; font-style: italic; font-weight: 600; font-display: swap; src: url("assets/fonts/LibreFranklin-SemiBoldItalic.ttf") format("truetype"); }
+@font-face { font-family: "Libre Franklin"; font-style: normal; font-weight: 800; font-display: swap; src: url("assets/fonts/LibreFranklin-ExtraBold.ttf") format("truetype"); }
+@font-face { font-family: "Libre Franklin"; font-style: italic; font-weight: 800; font-display: swap; src: url("assets/fonts/LibreFranklin-ExtraBoldItalic.ttf") format("truetype"); }
+@font-face { font-family: "IBM Plex Mono"; font-style: normal; font-weight: 400; font-display: swap; src: url("assets/fonts/IBMPlexMono-Regular.ttf") format("truetype"); }
+@font-face { font-family: "IBM Plex Mono"; font-style: normal; font-weight: 500; font-display: swap; src: url("assets/fonts/IBMPlexMono-Medium.ttf") format("truetype"); }
+@font-face { font-family: "IBM Plex Mono"; font-style: normal; font-weight: 600; font-display: swap; src: url("assets/fonts/IBMPlexMono-SemiBold.ttf") format("truetype"); }
 
 :root {
   /* role slots: each var holds the value its role needs per scheme */
