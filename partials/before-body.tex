@@ -1,0 +1,71 @@
+% ------------------------------------------------------------------
+% The SSUS working-paper masthead (Surface 02 of the brand identity
+% sheet): mark, series line, title, authors, then a footer rule with
+% the lab line and the date. Replaces quarto's default \maketitle +
+% abstract block; the abstract and keywords environments below are
+% the hikmah core's.
+% ------------------------------------------------------------------
+\thispagestyle{empty}
+\begingroup
+\setlength{\parindent}{0pt}
+
+\ifssusmark
+\noindent\includegraphics[height=26mm]{\ssusmarkfile}\par
+\vspace{5mm}
+{\ssusmonoLS\small\color{BluePrint}\MakeUppercase{\ssusseries}\par}
+\vspace{4mm}
+\else
+{\sffamily\bfseries\small\color{BluePrint}Spatial Science and Urban Systems\par}
+\vspace{1mm}
+{\ssusmonoLS\footnotesize\color{BluePrint}\MakeUppercase{working paper series}\par}
+\vspace{4mm}
+\fi
+
+{\sffamily\bfseries\fontsize{17.5}{23}\selectfont\color{SurveyInk}$title$\par}
+
+$if(by-author)$
+\vspace{4.5mm}
+% Per-author numbering: each name carries a superscript; the
+% affiliations line repeats the same numbers, one group per author.
+{\sffamily\small\color{SurveyInk}%
+\setcounter{ssusaffil}{0}%
+$for(by-author)$$it.name.literal$\textsuperscript{\stepcounter{ssusaffil}\arabic{ssusaffil}}$sep$ \hspace{0.2em}\textperiodcentered\hspace{0.2em}$endfor$\par}
+\vspace{2mm}
+{\sffamily\footnotesize\color{Slate}%
+\setcounter{ssusaffil}{0}%
+$for(by-author)$\textsuperscript{\stepcounter{ssusaffil}\arabic{ssusaffil}}$for(it.affiliations)$$if(it.name)$$it.name$$endif$$if(it.department)$, $it.department$$endif$$sep$ \textperiodcentered\ $endfor$$sep$\hspace{1.5em}$endfor$\par}
+$endif$
+
+\vspace{9mm}
+{\color{Graticule}\hrule height 0.4pt\par}
+\vspace{2.5mm}
+{\ttfamily\footnotesize\color{Graticule}%
+Spatial Science and Urban Systems \textperiodcentered{} UC Irvine
+\hfill \ssusdate\par}
+\endgroup
+\vspace{6mm}
+
+$if(abstract)$
+\begin{abstract}
+$abstract$
+\end{abstract}
+\vskip 3em
+$endif$
+
+$if(keywords)$
+\begin{keywords}
+\def\sep{;\ }
+$for(keywords/allbutlast)$$keywords$\sep $endfor$
+$for(keywords/last)$$keywords$$endfor$
+\end{keywords}
+$endif$
+
+$if(epigraph)$
+$for(epigraph)$
+$if(epigraph.source)$
+\epigraph{$epigraph.text$}{---$epigraph.source$}
+$else$
+\epigraph{$epigraph.text$}
+$endif$
+$endfor$
+$endif$

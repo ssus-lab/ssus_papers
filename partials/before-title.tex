@@ -1,0 +1,55 @@
+% ------------------------------------------------------------------
+% SSUS working-paper format — end-of-preamble definitions
+% hikmah carried much of this in its before-body partial; on quarto
+% >= 1.10 preamble content splices via before-title.tex.
+% ------------------------------------------------------------------
+
+% Epigraph styling (hikmah core)
+\renewcommand{\epigraphsize}{\sffamily\footnotesize}
+\setlength{\epigraphrule}{0em}
+\setlength{\beforeepigraphskip}{-2em}
+\setlength{\afterepigraphskip}{1em}
+
+$if(biblatex)$
+% ----------
+% BibLaTeX
+% ----------
+$if(biblatex-chicago)$
+\usepackage[$if(biblio-style)$$biblio-style$,$endif$$for(biblatexoptions)$$biblatexoptions$$sep$,$endfor$]{biblatex-chicago}
+$else$
+\usepackage[$if(biblio-style)$style=$biblio-style$,$endif$$for(biblatexoptions)$$biblatexoptions$$sep$,$endfor$]{biblatex}
+$endif$
+
+\setlength\bibitemsep{0pt}  % No space between bib entries
+\renewcommand*{\bibfont}{\footnotesize}  % Use smaller font
+\setlength\bibhang{\parindent}  % Match document indentation
+
+% Fix biblatex's odd preference for using In: by default.
+\renewbibmacro{in:}{%
+  \ifentrytype{article}{}{%
+  \printtext{\bibstring{}\intitlepunct}}}
+
+\addbibresource{$bibliography$}
+$endif$
+
+% Masthead options (from the document's metadata)
+\newif\ifssusmark
+\ssusmarktrue
+$if(masthead-typographic)$
+\ssusmarkfalse
+$endif$
+$if(masthead-mark-file)$
+\def\ssusmarkfile{$masthead-mark-file$}
+$else$
+\def\ssusmarkfile{_extensions/ssus-masthead/assets/ssus-mark-light.pdf}
+$endif$
+$if(masthead-series)$
+\def\ssusseries{$masthead-series$}
+$else$
+\def\ssusseries{SSUS working paper series}
+$endif$
+$if(date)$
+\def\ssusdate{$date$}
+$else$
+\def\ssusdate{\today}
+$endif$

@@ -1,0 +1,195 @@
+% ------------------------------------------------------------------
+% SSUS working-paper format — preamble
+% Adapted from the hikmah core (andrewheiss/hikmah-academic-quarto
+% v0.0.7, MIT). Changes from hikmah: Libre Franklin and IBM Plex Mono
+% replace the default sans and mono; the brand palette is added; the
+% centered \maketitle machinery (titling, \published, author tabulars)
+% is removed — the masthead partial owns the title region instead —
+% and a running footer carries the lab line.
+% ------------------------------------------------------------------
+
+% -----------------
+% Brand fonts
+% -----------------
+% Libre Franklin 400/600/800 for everything set in words; IBM Plex Mono
+% for code, data, and the UC IRVINE line (brand README, *Type*).
+% Bold maps to ExtraBold (800), the brand's display weight.
+\usepackage{fontspec}
+\setmainfont{LibreFranklin}[
+  Path        = _extensions/ssus-masthead/assets/fonts/,
+  Extension   = .ttf,
+  UprightFont = *-Regular,
+  ItalicFont  = *-Italic,
+  BoldFont    = *-ExtraBold,
+  BoldItalicFont = *-ExtraBoldItalic,
+]
+\setsansfont{LibreFranklin}[
+  Path        = _extensions/ssus-masthead/assets/fonts/,
+  Extension   = .ttf,
+  UprightFont = *-Regular,
+  ItalicFont  = *-Italic,
+  BoldFont    = *-ExtraBold,
+  BoldItalicFont = *-ExtraBoldItalic,
+]
+% IBM Plex Mono ships in TeX Live (ibmplex); SemiBold is its 600 weight
+\setmonofont{IBMPlexMono}[
+  UprightFont = IBMPlexMono-Regular,
+  BoldFont    = IBMPlexMono-SemiBold,
+]
+% Letter-spaced mono, for the masthead series line (mock: .13em)
+\newfontfamily\ssusmonoLS{IBMPlexMono}[
+  UprightFont = IBMPlexMono-Regular,
+  BoldFont    = IBMPlexMono-SemiBold,
+  LetterSpace = 15,
+]
+
+% -----------------
+% Brand colors
+% -----------------
+\usepackage{xcolor}
+\definecolor{BluePrint}{HTML}{0F3B5E}   % mark, headings, links
+\definecolor{SurveyInk}{HTML}{16232E}   % body text
+\definecolor{PlanWhite}{HTML}{F8F9F7}   % page ground
+\definecolor{Graticule}{HTML}{8FA1AB}   % rules, footer, secondary marks
+\definecolor{Slate}{HTML}{5C6B74}       % secondary text
+\definecolor{Sky}{HTML}{9DBBD6}         % secondary text on blueprint
+\definecolor{Signal}{HTML}{E0691E}      % data accent only
+
+% hyperref colors must be set after hyperref loads
+\AtBeginDocument{%
+  \hypersetup{linkcolor=BluePrint, urlcolor=BluePrint, citecolor=BluePrint}%
+  \pagecolor{PlanWhite}%
+  \color{SurveyInk}%
+}
+
+% Line spread for a sans body (brand: line-height 1.5 in HTML)
+\linespread{1.14}
+
+% -------------------------
+% hikmah core, adapted
+% -------------------------
+% Indent size
+\setlength{\parindent}{1pc}
+
+% Fix widows and orphans
+\usepackage[all,defaultlines=2]{nowidow}
+
+% List things
+\usepackage{enumitem}
+\setlist[1]{labelindent=\parindent}
+\setlist[itemize]{leftmargin=*}
+\setlist[enumerate]{leftmargin=*}
+\setlist[description]{style=unboxed}
+
+% For better TOCs
+\usepackage{tocloft}
+
+% Remove left margin in lists inside longtables
+\AtBeginEnvironment{longtable}{\setlist[itemize]{nosep, wide=0pt, leftmargin=*, before=\vspace*{-\baselineskip}, after=\vspace*{-\baselineskip}}}
+
+% Allow for \singlespacing and \doublespacing
+\usepackage{setspace}
+
+% Abstract
+\usepackage[overload]{textcase}
+\usepackage[runin]{abstract}
+\renewcommand{\abstractnamefont}{\normalfont\footnotesize\bfseries\MakeUppercase}
+\renewcommand{\abstracttextfont}{\normalfont\small\color{Slate}}
+\setlength{\absleftindent}{\parindent * 2}
+\setlength{\absrightindent}{\parindent * 2}
+\abslabeldelim{\quad}
+\setlength{\abstitleskip}{-\parindent}
+
+% Keywords
+\newenvironment{keywords}
+{\vskip -3em \hspace{\parindent}\small{\footnotesize\bfseries\MakeUppercase{Keywords}}\quad}
+{\vskip 3em}
+
+% ------------------
+% Section headings
+% (brand: Libre Franklin ExtraBold, survey ink)
+% ------------------
+\usepackage{titlesec}
+\titleformat*{\section}{\Large\sffamily\bfseries\raggedright}
+\titleformat*{\subsection}{\large\sffamily\bfseries\raggedright}
+\titleformat*{\subsubsection}{\normalsize\sffamily\bfseries\raggedright}
+\titleformat*{\paragraph}{\small\sffamily\bfseries\raggedright}
+
+\titlespacing*{\section}{0em}{2em}{0.1em}
+\titlespacing*{\subsection}{0em}{1.25em}{0.1em}
+\titlespacing*{\subsubsection}{0em}{0.75em}{0em}
+
+% -----------
+% Footnotes
+% -----------
+% NB: footmisc has to come after setspace and biblatex because of conflicts
+\usepackage[bottom, flushmargin]{footmisc}
+\renewcommand*{\footnotelayout}{\footnotesize}
+\addtolength{\skip\footins}{10pt}
+\setlength{\footnotesep}{5pt}
+
+% ----------
+% Captions
+% ----------
+\usepackage[font={small,sf}, labelfont={small,sf,bf}]{caption}
+
+% -----------------
+% References
+% -----------------
+% The hikmah core carries no bibliography styling, so citeproc entries
+% land in pandoc's CSLReferences list, whose open spec sets itemsep to
+% entry-spacing × \baselineskip — one full blank line between entries.
+% An etoolbox AtBeginEnvironment hook cannot fix it (it fires before
+% the open code, which overwrites it), so redefine the environment:
+% this header loads after pandoc's definitions, hanging indent kept,
+% entries set tight as typeset lines.
+\ifcsname CSLReferences\endcsname
+  \renewenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
+   {\begin{list}{}{%
+      \setlength{\itemindent}{0pt}
+      \setlength{\leftmargin}{0pt}
+      \setlength{\parsep}{0pt}
+      \ifodd #1
+       \setlength{\leftmargin}{\cslhangindent}
+       \setlength{\itemindent}{-1\cslhangindent}
+      \fi
+      \setlength{\itemsep}{2pt}}}
+   {\end{list}}
+\fi
+
+% ---------------------------
+% Macros (hikmah core)
+% ---------------------------
+\usepackage{pdflscape}
+\usepackage{epigraph}
+\newcommand{\blandscape}{\begin{landscape}}
+\newcommand{\elandscape}{\end{landscape}}
+\newcommand{\stgroup}{\begingroup}
+\newcommand{\fingroup}{\endgroup}
+
+% -----------------
+% Masthead counters
+% -----------------
+% The masthead partial steps this once per author, so each name carries
+% a superscript and the affiliations line repeats the same numbers.
+\newcounter{ssusaffil}
+
+% -----------------
+% Running footer
+% -----------------
+\usepackage{fancyhdr}
+\fancyhf{}
+\fancyfoot[L]{\ttfamily\footnotesize\color{Graticule}%
+  Spatial Science and Urban Systems \textperiodcentered{} UC Irvine}
+\fancyfoot[R]{\ttfamily\footnotesize\color{Graticule}\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\pagestyle{fancy}
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \fancyfoot[L]{\ttfamily\footnotesize\color{Graticule}%
+    Spatial Science and Urban Systems \textperiodcentered{} UC Irvine}%
+  \fancyfoot[R]{\ttfamily\footnotesize\color{Graticule}\thepage}%
+  \renewcommand{\headrulewidth}{0pt}%
+  \renewcommand{\footrulewidth}{0pt}%
+}

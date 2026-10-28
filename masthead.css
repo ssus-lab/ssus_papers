@@ -1,0 +1,202 @@
+/* ------------------------------------------------------------------
+   SSUS working-paper masthead — html companion to ssus-masthead-pdf
+   (Surface 02 of the brand identity sheet). Palette and type match the
+   brand: plan-white ground, survey-ink text, blueprint links; Libre
+   Franklin for everything set in words, IBM Plex Mono for the series
+   and footer lines.
+   ------------------------------------------------------------------ */
+
+@import url("https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,400;0,600;0,800;1,400;1,600;1,800&family=IBM+Plex+Mono:wght@400;500;600&display=swap");
+
+:root {
+  /* role slots: each var holds the value its role needs per scheme */
+  --ssus-blueprint: #0F3B5E;
+  --ssus-survey-ink: #16232E;
+  --ssus-plan-white: #F8F9F7;
+  --ssus-graticule: #8FA1AB;
+  --ssus-slate: #5C6B74;
+  --ssus-accent: #0F3B5E;        /* the series/stacked label line */
+}
+
+body {
+  background-color: var(--ssus-plan-white) !important;
+  color: var(--ssus-survey-ink) !important;
+  font-family: "Libre Franklin", ui-sans-serif, system-ui, sans-serif !important;
+  line-height: 1.5;
+}
+
+code {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Libre Franklin", sans-serif;
+  font-weight: 700;
+  color: var(--ssus-blueprint);
+}
+
+p, blockquote {
+  text-align: justify;
+  hyphens: auto;
+}
+
+/* -------------------------
+   Masthead (title block)
+   ------------------------- */
+
+#title-block-header.ssus-masthead {
+  margin: 3rem 0 2.5rem;
+}
+
+.ssus-mark {
+  height: 84px;
+  width: auto;
+  display: block;
+  margin: 0;
+}
+
+.ssus-series-line {
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 500;
+  color: var(--ssus-accent);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  margin: 1.05rem 0 0.85rem;
+}
+
+/* the typographic variant (no mark): the Surface-02-E stacked label */
+.ssus-typographic-series {
+  font-family: "Libre Franklin", sans-serif;
+  font-weight: 700;
+  color: var(--ssus-accent);
+  font-size: 1.05rem;
+  margin: 0 0 0.15rem;
+}
+
+#title-block-header.ssus-masthead h1.title {
+  font-family: "Libre Franklin", sans-serif;
+  font-weight: 800;
+  font-size: 2.05rem;
+  line-height: 1.25;
+  color: var(--ssus-survey-ink);
+  margin: 0.25rem 0 0.9rem;
+}
+
+.ssus-subtitle {
+  font-family: "Libre Franklin", sans-serif;
+  font-weight: 600;
+  color: var(--ssus-slate);
+}
+
+.ssus-authors {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+.ssus-authors > * + * { margin-left: 0.45em; }
+.ssus-author-sep { color: var(--ssus-slate); }
+
+/* per-author numbering: each connected name carries a superscript; the
+   affiliations line repeats the numbers as one group per author —
+   CSS counters keyed on the same non-empty-affiliations condition */
+.ssus-authors { counter-reset: ssusaffil; }
+.ssus-has-affil::after {
+  content: counter(ssusaffil);
+  counter-increment: ssusaffil;
+  font-size: 0.7em;
+  vertical-align: super;
+}
+
+.ssus-affiliations {
+  counter-reset: ssusaffilgrp;
+  font-size: 0.875rem;
+  color: var(--ssus-slate);
+  margin-top: 0.35rem;
+}
+.ssus-affiliation {
+  counter-increment: ssusaffilgrp;
+}
+.ssus-affiliation + .ssus-affiliation { margin-left: 1.6em; }
+.ssus-affiliation::before {
+  content: counter(ssusaffilgrp);
+  font-size: 0.8em;
+  vertical-align: super;
+  margin-right: 0.15em;
+}
+
+.ssus-masthead-rule {
+  border-top: 1px solid var(--ssus-graticule);
+  margin: 2.1rem 0 0.55rem;
+}
+
+.ssus-masthead-meta {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.8rem;
+  color: var(--ssus-graticule);
+}
+
+/* ------------------
+   Abstract, keywords
+   ------------------ */
+
+.ssus-abstract {
+  margin-top: 1.6rem;
+  max-width: 46rem;
+  font-size: 0.95rem;
+  color: var(--ssus-slate);
+}
+.ssus-block-label {
+  font-family: "Libre Franklin", sans-serif;
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ssus-survey-ink);
+  display: inline;
+  margin-right: 0.55em;
+}
+.ssus-keywords { margin-top: 0.9rem; }
+
+/* ------------------
+   References (appendix)
+   ------------------ */
+/* Quarto carries the bibliography in #quarto-appendix and styles it for
+   white grounds: a hardcoded #fff card and a small fixed appendix heading
+   (its compiled scss pins `font-size: 1em !important`, 17px at quarto's
+   root, against bootstrap's 1.65rem ≈ 28px section h2). The card is what
+   read wrong on a plan-white page — a two-tone box — so the ground
+   follows the brand var; at one tone the small heading sits fine, so its
+   size stays quarto's. Refs anchors read as typeset prose: body ink,
+   heading-colored underline kept from the brand. */
+
+#quarto-appendix.default { background-color: var(--ssus-plan-white); }
+#quarto-bibliography h2.quarto-appendix-heading {
+  margin-top: 0;
+}
+#quarto-appendix a {
+  color: var(--ssus-survey-ink);
+  text-decoration-color: var(--ssus-graticule);
+}
+
+/* ------------------
+   Dark scheme
+   ------------------ */
+/* _brand-dark.yml: night ground (#101821), haze text (#E6EBEA), sky-link
+   URLs; headings haze, secondary graticule. The mark's night variant
+   (corner places filled with the night ground) ships in the
+   <picture> source of the title block. */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ssus-plan-white: #101821;
+    --ssus-survey-ink: #E6EBEA;
+    --ssus-blueprint: #E6EBEA;
+    --ssus-accent: #7FAFD4;
+    --ssus-slate: #8FA1AB;
+  }
+  a:link, a:visited, a:hover { color: #7FAFD4 !important; }
+  #quarto-appendix a { color: var(--ssus-survey-ink) !important; }
+}
