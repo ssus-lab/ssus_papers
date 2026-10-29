@@ -1,11 +1,13 @@
 title: SSUS working-paper masthead format
 author: Eli Knaap
-version: 0.0.2
+version: 0.0.4
 quarto-required: ">=1.4.11"
 # Built from the hikmah core (Andrew Heiss, andrewheiss/hikmah-academic-quarto
 # v0.0.7, MIT): include-in-header.tex and the before-body/title partials are
-# adapted copies. Retyped to the SSUS brand (Libre Franklin 400/600/800, IBM
-# Plex Mono), recolored to the brand palette, and its centered title block
+# adapted copies. Retyped to the SSUS brand (IBM Plex Serif and IBM Plex Math
+# for the body and its mathematics, Libre Franklin 400/600/800 for the
+# masthead, headings, and captions, IBM Plex Mono for code and data),
+# recolored to the brand palette, and its centered title block
 # replaced by the working-paper masthead from the brand identity sheet
 # (Surface 02): mark, series line, title, authors, footer rule with the lab
 # line and the date. On Quarto >= 1.10 the preamble tail splices via
@@ -19,17 +21,39 @@ quarto-required: ">=1.4.11"
 contributes:
   formats:
     pdf:
+      # the fonts and the mark are copied beside the render, so the
+      # extension works at any install depth — org-nested by quarto add
+      # (ssus-lab/ssus_papers -> _extensions/ssus-lab/ssus-masthead/) or
+      # hand-vendored (_extensions/ssus-masthead/)
+      format-resources:
+        - assets/fonts/IBMPlexSerif-Regular.otf
+        - assets/fonts/IBMPlexSerif-Italic.otf
+        - assets/fonts/IBMPlexSerif-SemiBold.otf
+        - assets/fonts/IBMPlexSerif-SemiBoldItalic.otf
+        - assets/fonts/IBMPlexMath-Regular.otf
+        - assets/fonts/LibreFranklin-Regular.ttf
+        - assets/fonts/LibreFranklin-Italic.ttf
+        - assets/fonts/LibreFranklin-SemiBold.ttf
+        - assets/fonts/LibreFranklin-SemiBoldItalic.ttf
+        - assets/fonts/LibreFranklin-ExtraBold.ttf
+        - assets/fonts/LibreFranklin-ExtraBoldItalic.ttf
+        - assets/fonts/IBMPlexMono-Regular.ttf
+        - assets/fonts/IBMPlexMono-SemiBold.ttf
+        - assets/ssus-mark-light.pdf
       template-partials:
         - "partials/before-title.tex"
         - "partials/before-body.tex"
       include-in-header:
         - "include-in-header.tex"
       csl: assets/apa.csl
+      # 11 pt on a 6 in measure: about 88 characters to the line in Plex
+      # Serif, where 10 pt on 6.5 in set about 100
+      fontsize: 11pt
       geometry:
         - top=1in
         - bottom=1in
-        - left=1in
-        - right=1in
+        - left=1.25in
+        - right=1.25in
         - heightrounded
         - footskip=25pt
       colorlinks: true

@@ -1,14 +1,22 @@
 /* ------------------------------------------------------------------
    SSUS working-paper masthead — html companion to ssus-masthead-pdf
    (Surface 02 of the brand identity sheet). Palette and type match the
-   brand: plan-white ground, survey-ink text, blueprint links; Libre
-   Franklin for everything set in words, IBM Plex Mono for the series
-   and footer lines.
+   brand: plan-white ground, survey-ink text, blueprint links; IBM Plex
+   Serif for the body, Libre Franklin for the masthead, headings, and
+   captions, IBM Plex Mono for code and the series and footer lines.
+   Math stays with the document's html-math-method (KaTeX or MathJax),
+   not Plex Math.
    ------------------------------------------------------------------ */
 
-/* Vendored OFL fonts, both families in assets/fonts/ with their licenses.
+/* Vendored OFL fonts, all three families in assets/fonts/ with their
+   licenses (Plex Serif from TeX Live's v3.001: Google Fonts' v2.6 has no
+   Greek).
    Quarto references this css in place from _extensions/ssus-masthead/, so
    the urls resolve beside it — no web fonts, nothing fetched at view time. */
+@font-face { font-family: "IBM Plex Serif"; font-style: normal; font-weight: 400; font-display: swap; src: url("assets/fonts/IBMPlexSerif-Regular.otf") format("opentype"); }
+@font-face { font-family: "IBM Plex Serif"; font-style: italic; font-weight: 400; font-display: swap; src: url("assets/fonts/IBMPlexSerif-Italic.otf") format("opentype"); }
+@font-face { font-family: "IBM Plex Serif"; font-style: normal; font-weight: 600; font-display: swap; src: url("assets/fonts/IBMPlexSerif-SemiBold.otf") format("opentype"); }
+@font-face { font-family: "IBM Plex Serif"; font-style: italic; font-weight: 600; font-display: swap; src: url("assets/fonts/IBMPlexSerif-SemiBoldItalic.otf") format("opentype"); }
 @font-face { font-family: "Libre Franklin"; font-style: normal; font-weight: 400; font-display: swap; src: url("assets/fonts/LibreFranklin-Regular.ttf") format("truetype"); }
 @font-face { font-family: "Libre Franklin"; font-style: italic; font-weight: 400; font-display: swap; src: url("assets/fonts/LibreFranklin-Italic.ttf") format("truetype"); }
 @font-face { font-family: "Libre Franklin"; font-style: normal; font-weight: 600; font-display: swap; src: url("assets/fonts/LibreFranklin-SemiBold.ttf") format("truetype"); }
@@ -27,17 +35,31 @@
   --ssus-graticule: #8FA1AB;
   --ssus-slate: #5C6B74;
   --ssus-accent: #0F3B5E;        /* the series/stacked label line */
+  --ssus-code: #0F3B5E;          /* inline code: Plex Serif and Plex Mono
+                                    share a skeleton, so color separates them */
 }
 
 body {
   background-color: var(--ssus-plan-white) !important;
   color: var(--ssus-survey-ink) !important;
-  font-family: "Libre Franklin", ui-sans-serif, system-ui, sans-serif !important;
+  font-family: "IBM Plex Serif", Georgia, serif !important;
   line-height: 1.5;
 }
 
 code {
   font-family: "IBM Plex Mono", ui-monospace, monospace;
+}
+code:not(.sourceCode) {
+  color: var(--ssus-code);
+}
+
+/* the apparatus stays in the sans, as in the pdf */
+figcaption, caption, .ssus-authors, .ssus-affiliations {
+  font-family: "Libre Franklin", sans-serif;
+}
+/* quarto's muted caption gray (#5A6570) is too dark for the night ground */
+figcaption, caption {
+  color: var(--ssus-slate) !important;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -207,6 +229,7 @@ p, blockquote {
     --ssus-blueprint: #E6EBEA;
     --ssus-accent: #7FAFD4;
     --ssus-slate: #8FA1AB;
+    --ssus-code: #7FAFD4;
   }
   a:link, a:visited, a:hover { color: #7FAFD4 !important; }
   #quarto-appendix a { color: var(--ssus-survey-ink) !important; }

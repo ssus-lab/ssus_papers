@@ -7,3 +7,6 @@ __pycache__/
 !_extensions/**/*.html
 /.quarto/
 **/*.quarto_ipynb
+/*.ttf
+/*.otf
+/ssus-mark-light.pdf

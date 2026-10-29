@@ -1,8 +1,9 @@
 % ------------------------------------------------------------------
 % SSUS working-paper format — preamble
 % Adapted from the hikmah core (andrewheiss/hikmah-academic-quarto
-% v0.0.7, MIT). Changes from hikmah: Libre Franklin and IBM Plex Mono
-% replace the default sans and mono; the brand palette is added; the
+% v0.0.7, MIT). Changes from hikmah: IBM Plex Serif and IBM Plex Math,
+% Libre Franklin, and IBM Plex Mono replace the default roman, math,
+% sans, and mono; the brand palette is added; the
 % centered \maketitle machinery (titling, \published, author tabulars)
 % is removed — the masthead partial owns the title region instead —
 % and a running footer carries the lab line.
@@ -11,20 +12,31 @@
 % -----------------
 % Brand fonts
 % -----------------
-% Libre Franklin 400/600/800 for everything set in words; IBM Plex Mono
-% for code, data, and the UC IRVINE line (brand README, *Type*).
-% Bold maps to ExtraBold (800), the brand's display weight.
+% IBM Plex Serif 400/600 for what is read at length (body, abstract,
+% footnotes, references, tables) and IBM Plex Math, its companion, for
+% mathematics; Libre Franklin 400/800 for the masthead, headings, and
+% captions; IBM Plex Mono for code, data, and the UC IRVINE line (brand
+% README, *Type*). In the sans, bold maps to ExtraBold (800), the brand's
+% display weight; in the serif, to SemiBold. Plex Serif and Plex Math
+% are TeX Live's v3.001 / v1.000 files: Google Fonts' Plex Serif (v2.6)
+% carries no Greek. Plex Serif's figures are tabular and lining by
+% default, so table columns align; Libre Franklin has no tabular figures.
+% The fonts ride beside the render: format-resources (in _extension.yml)
+% copy them to the project dir, so the paths are bare and the extension
+% works at any install depth.
 \usepackage{fontspec}
-\setmainfont{LibreFranklin}[
-  Path        = _extensions/ssus-masthead/assets/fonts/,
-  Extension   = .ttf,
+\setmainfont{IBMPlexSerif}[
+  Path        = ./,
+  Extension   = .otf,
   UprightFont = *-Regular,
   ItalicFont  = *-Italic,
-  BoldFont    = *-ExtraBold,
-  BoldItalicFont = *-ExtraBoldItalic,
+  BoldFont    = *-SemiBold,
+  BoldItalicFont = *-SemiBoldItalic,
 ]
+% pandoc's template loads unicode-math before this header
+\setmathfont{IBMPlexMath-Regular.otf}[Path = ./]
 \setsansfont{LibreFranklin}[
-  Path        = _extensions/ssus-masthead/assets/fonts/,
+  Path        = ./,
   Extension   = .ttf,
   UprightFont = *-Regular,
   ItalicFont  = *-Italic,
@@ -33,14 +45,14 @@
 ]
 % IBM Plex Mono vendored beside Libre Franklin (OFL); SemiBold is its 600
 \setmonofont{IBMPlexMono}[
-  Path        = _extensions/ssus-masthead/assets/fonts/,
+  Path        = ./,
   Extension   = .ttf,
   UprightFont = *-Regular,
   BoldFont    = *-SemiBold,
 ]
 % Letter-spaced mono, for the masthead series line (mock: .13em)
 \newfontfamily\ssusmonoLS{IBMPlexMono}[
-  Path        = _extensions/ssus-masthead/assets/fonts/,
+  Path        = ./,
   Extension   = .ttf,
   UprightFont = *-Regular,
   BoldFont    = *-SemiBold,
@@ -59,6 +71,12 @@
 \definecolor{Sky}{HTML}{9DBBD6}         % secondary text on blueprint
 \definecolor{Signal}{HTML}{E0691E}      % data accent only
 
+% Inline code in Blueprint: Plex Serif and Plex Mono share a skeleton, so
+% color carries the separation the faces alone do not. Pandoc sets inline
+% code with \texttt; the footer and code blocks use \ttfamily directly
+% and keep their own colors.
+\DeclareTextFontCommand{\texttt}{\ttfamily\color{BluePrint}}
+
 % hyperref colors must be set after hyperref loads
 \AtBeginDocument{%
   \hypersetup{linkcolor=BluePrint, urlcolor=BluePrint, citecolor=BluePrint}%
@@ -66,7 +84,7 @@
   \color{SurveyInk}%
 }
 
-% Line spread for a sans body (brand: line-height 1.5 in HTML)
+% Line spread (brand: line-height 1.5 in HTML)
 \linespread{1.14}
 
 % -------------------------
@@ -97,7 +115,7 @@
 % Abstract
 \usepackage[overload]{textcase}
 \usepackage[runin]{abstract}
-\renewcommand{\abstractnamefont}{\normalfont\footnotesize\bfseries\MakeUppercase}
+\renewcommand{\abstractnamefont}{\normalfont\sffamily\footnotesize\bfseries\MakeUppercase}
 \renewcommand{\abstracttextfont}{\normalfont\small\color{Slate}}
 \setlength{\absleftindent}{\parindent * 2}
 \setlength{\absrightindent}{\parindent * 2}
@@ -106,7 +124,7 @@
 
 % Keywords
 \newenvironment{keywords}
-{\vskip -3em \hspace{\parindent}\small{\footnotesize\bfseries\MakeUppercase{Keywords}}\quad}
+{\vskip -3em \hspace{\parindent}\small{\sffamily\footnotesize\bfseries\MakeUppercase{Keywords}}\quad}
 {\vskip 3em}
 
 % ------------------

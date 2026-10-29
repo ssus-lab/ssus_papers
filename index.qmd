@@ -10,12 +10,15 @@ format: ssus-masthead-pdf
 ---
 
 The masthead carries the working-paper identity; the body demonstrates the
-type it governs — *italic*, **bold** (ExtraBold, the display weight), `code`
-set in IBM Plex Mono, and a footnote[^1].
+type it governs — *italic*, **bold** (SemiBold), `code` set in IBM Plex Mono
+and colored Blueprint, a variable $\lambda_k = \rho \sum_j w_{kj} x_j$ in IBM
+Plex Math, and a footnote[^1].
 
-[^1]: Footnotes set small in Libre Franklin.
+[^1]: Footnotes set small in IBM Plex Serif.
 
 | Surface | Set in |
 |---|---|
 | Title | Libre Franklin ExtraBold |
 | Series line | IBM Plex Mono, letter-spaced |
+| Body | IBM Plex Serif |
+| Mathematics | IBM Plex Math |
