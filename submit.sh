@@ -12,6 +12,7 @@ set -uo pipefail
 MANUSC="${1:-template.qmd}"
 TITLEPAGE="title-page.qmd"
 BUNDLE="submission"
+OUT="${OUT_DIR:-}"          # set OUT_DIR= for projects with an output-dir
 STEM="${MANUSC%.qmd}"
 
 command -v quarto >/dev/null 2>&1 || { echo "FAIL: quarto not on PATH"; exit 1; }
@@ -27,12 +28,17 @@ quarto render "$TITLEPAGE" --profile pretty --to ssus-titlepage-pdf \
 
 echo "== stage =="
 rm -rf "$BUNDLE"; mkdir -p "$BUNDLE"
-cp blind.pdf "$BUNDLE/manuscript.pdf" || { echo "FAIL: no blind pdf"; exit 1; }
-cp "$STEM.tex" "$BUNDLE/manuscript.tex" \
-  || { echo "FAIL: no blind .tex (keep-tex must stay on)"; exit 1; }
-cp "${TITLEPAGE%.qmd}.pdf" "$BUNDLE/title-page.pdf" \
+# keep-tex names the .tex by the input's stem; the pdf follows the output-file
+# (the blind format's default) — both may sit under $OUT when the project
+# sets an output-dir.
+cp "${OUT}blind.pdf" "$BUNDLE/manuscript.pdf" \
+  || { echo "FAIL: no ${OUT}blind.pdf"; exit 1; }
+cp "${OUT}$STEM.tex" "$BUNDLE/manuscript.tex" \
+  || { echo "FAIL: no ${OUT}$STEM.tex (keep-tex must stay on)"; exit 1; }
+cp "${OUT}${TITLEPAGE%.qmd}.pdf" "$BUNDLE/title-page.pdf" \
   || { echo "FAIL: no title-page pdf"; exit 1; }
-cp "${TITLEPAGE%.qmd}.tex" "$BUNDLE/title-page.tex"
+cp "${OUT}${TITLEPAGE%.qmd}.tex" "$BUNDLE/title-page.tex" 2>/dev/null \
+  || cp "${TITLEPAGE%.qmd}.tex" "$BUNDLE/title-page.tex"
 [ -f "cover_letter.pdf" ] && cp cover_letter.pdf "$BUNDLE/"
 
 echo "== figures (preserve the .tex's relative tree) =="
