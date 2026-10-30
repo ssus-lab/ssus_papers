@@ -1,0 +1,60 @@
+% include-in-header for ssus-blind — the pdfLaTeX-safe blind manuscript.
+%
+% Adapted from the hikmah core (andrewheiss/hikmah-academic-quarto, MIT)
+% and ssus-masthead's adaptation of it, with every brand face removed: no
+% fontspec, no custom fonts, no mark, no color, no pagecolor — the kept
+% .tex must compile on a journal's own pdfLaTeX build. Computer Modern is
+% the default face; a journal wanting Times adds newtx in the profile,
+% never here.
+
+% --- fonts (pdfLaTeX-safe only) -----------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+% --- running heads (hikmah-manuscript's page styles) ---------------------
+% The FANCYPAGESTYLE definitions live in partials/before-title.tex: the
+% styles carry template variables, and header files are not
+% template-evaluated. The \pagestyle{normal} activation is there too, and
+% must follow those definitions — fancyhdr errors on activating a style
+% not defined yet, and header files run before the preamble tail.
+\usepackage{fancyhdr}
+\setlength{\headheight}{0.25in}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% --- line numbers: loaded always, opt-in through the linenumbers key ------
+\usepackage{lineno}
+
+% --- abstract and keywords (hikmah-neutral: no brand colors) -------------
+\usepackage[runin]{abstract}
+\setlength{\absleftindent}{0.5in}
+\setlength{\absrightindent}{0.5in}
+\renewcommand{\abstractnamefont}{\normalfont\bfseries}
+\providecommand{\keywords}[1]{\textbf{Keywords---}#1}
+
+% --- lists and paragraphs (manuscript conventions) ------------------------
+\usepackage{enumitem}
+\setlist{topsep=2pt, itemsep=2pt}
+\usepackage{indentfirst}
+
+% --- tables: the longtable tweak both logdet and rentpanel hand-copy ------
+\usepackage{etoolbox}
+\AtBeginEnvironment{longtable}{\footnotesize}
+
+% --- footnotes -------------------------------------------------------------
+\usepackage[bottom]{footmisc}
+
+% --- landscape (hikmah's macros) -------------------------------------------
+\usepackage{pdflscape}
+\newenvironment{blandscape}{\begin{landscape}}{\end{landscape}}
+% prose written against the display's stgroup/fingroup keeps compiling:
+\newcommand{\stgroup}[1]{#1}
+\newcommand{\fingroup}[1]{#1}
+
+% --- urls -------------------------------------------------------------------
+\usepackage{url}
+\urlstyle{same}
+
+% \thanks must never appear in the blind output, whatever a bad merge
+% leaks: the partials never emit it; this no-op is the backstop.
+\renewcommand{\thanks}[1]{}

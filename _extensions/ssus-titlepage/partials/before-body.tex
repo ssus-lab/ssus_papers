@@ -1,0 +1,69 @@
+% before-body.tex for ssus-titlepage — the whole title page.
+%
+% Structure and field access adapted from hikmah-manuscript v0.0.13
+% (andrewheiss/hikmah-academic-quarto, MIT); differences: no orcid icon
+% package (plain URL text), no hikmah-specific author-title key, a Funding
+% block, and a standalone-document layout. Identity arrives from the
+% display profile (_quarto-pretty.yml in the template), so this page
+% always carries the real block — rendering it under a blind profile
+% yields a guarded, authorless page, which submit.sh treats as a failure.
+\thispagestyle{empty}
+\begingroup
+\setlength{\parindent}{0.5in}
+
+{\centering
+{\bfseries\Large $title$$if(subtitle)$: $subtitle$$endif$\par}
+$if(date)$
+{\normalsize $date$\par}
+$endif$
+}
+
+\vspace{1.5em}
+
+$if(short-title)$
+\ssustplabel{Short title}
+\noindent $short-title$\par
+$endif$
+
+$if(word-count)$
+\ssustplabel{Word count}
+\noindent $word-count$\par
+$endif$
+
+$if(by-author)$
+\ssustplabel{Authors}
+$for(by-author)$
+\noindent $it.name.literal$$if(it.orcid)$ \hfill {\small \url{https://orcid.org/$it.orcid$}}$endif$\par
+$for(it.affiliations)$
+{\raggedright \hspace{0.5in}$if(it.department)$$it.department$, $endif$$it.name$$if(it.city)$, $it.city$$endif$$if(it.region)$, $it.region$$endif$$if(it.postal-code)$ $it.postal-code$$endif$$if(it.country)$, $it.country$$endif$\par}
+$endfor$
+\vskip 0.5\baselineskip
+$endfor$
+$endif$
+
+$if(correspondence-prefix)$
+$for(by-author)$
+$if(it.attributes.corresponding)$
+\ssustplabel{Correspondence}
+\noindent $correspondence-prefix$~$it.name.literal$$if(it.email)$ (\href{mailto:$it.email$}{$it.email$})$endif$$if(it.affiliations)$, $for(it.affiliations)$$if(it.department)$$it.department$, $endif$$it.name$$if(it.address)$, $it.address$$endif$$if(it.city)$, $it.city$$endif$$if(it.region)$, $it.region$$endif$$if(it.postal-code)$ $it.postal-code$$endif$$if(it.country)$, $it.country$$endif$$sep$; $endfor$$endif$\par
+$endif$
+$endfor$
+$endif$
+
+$if(funding-statement)$
+\ssustplabel{Funding}
+\noindent $funding-statement$\par
+$endif$
+
+$if(additional-info)$
+\ssustplabel{Additional information}
+\noindent $additional-info$\par
+$endif$
+
+$if(thanks)$
+\ssustplabel{Acknowledgments}
+\noindent $thanks$\par
+$endif$
+
+\vfill
+\endgroup

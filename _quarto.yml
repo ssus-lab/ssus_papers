@@ -1,4 +1,22 @@
 project:
   type: default
 
+# The template's BASE config: everything the copies share — title,
+# abstract, keywords, date, bibliography, and the body. It carries NO
+# authorship: quarto profiles merge config, so a key present here cannot be
+# removed by a profile — the identity keys live only in _quarto-pretty.yml,
+# and the blind copy gets them by never asking for them (blinding is
+# metadata absence, not editing). This is the rentpanel lesson (see
+# _quarto-blind.yml), the trap logdet's render-blind.sh once worked around
+# with a config swap.
+#
+# The display format is the project default; every copy of the template
+# renders it.
+
 format: ssus-masthead-pdf
+
+title: "A working paper specimen"
+abstract: >-
+  One paragraph set in the display and blind targets, exercising the type,
+  the series line, and the footer rule.
+keywords: [specimen, masthead]

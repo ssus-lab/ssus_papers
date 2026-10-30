@@ -1,0 +1,12 @@
+---
+# The submission title page. It carries NO identity: authors, thanks,
+# funding, correspondence, and declarations arrive from the display profile
+# (_quarto-pretty.yml) at render time, so the real block lives in one place.
+#
+#   quarto render title-page.qmd --profile pretty --to ssus-titlepage-pdf
+#
+# Rendered under a blind profile it yields a guarded, authorless page —
+# pointlessly, and by construction; submit.sh drives it with --profile
+# pretty and its checklist treats an identity-free page as a failure.
+format: ssus-titlepage-pdf
+---

@@ -1,0 +1,16 @@
+% include-in-header for ssus-titlepage — the pdfLaTeX-safe title page.
+%
+% pdfLaTeX-safe by construction: T1/lmodern text, Nimbus Sans (helvet) for
+% the label voice — \sffamily\bfseries caps stand in for the brand's
+% grotesque labels without any brand font or fontspec. Plain URL text
+% stands in for ORCID icons; black hyperref links; no color, no image.
+
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[scaled=0.92]{helvet}
+
+% The one label macro: a small sans caps line, like the brand's eyebrows.
+\newcommand{\ssustplabel}[1]{\par\medskip\noindent{\sffamily\bfseries\MakeUppercase{#1}}\par\smallskip}
+
+\usepackage{url}
+\urlstyle{same}

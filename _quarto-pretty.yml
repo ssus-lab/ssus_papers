@@ -1,0 +1,40 @@
+# The DISPLAY profile — the paper's entire identity, in one file.
+#
+#   quarto render --profile pretty
+#
+# Everything identity-bearing lives HERE and nowhere else: the real author
+# block (with ORCID, the corresponding-author flag, and full postal
+# affiliations for the title page), the acknowledgments (thanks:), the
+# funding statement, the correspondence prefix, and any additional-info
+# declarations. The display copy (ssus-masthead) reads the author block;
+# the title page (ssus-titlepage) reads every key this file carries. The
+# blind copy never merges this file — that is the whole point; if the
+# submission state ever lives here, run submit.sh instead of hand-merging.
+
+author:
+  - name: Eli Knaap
+    email: eknaap@uci.edu
+    orcid: 0000-0001-7520-2238
+    attributes:
+      corresponding: true
+    affiliations:
+      - name: University of California, Irvine
+        department: Department of Urban Planning and Public Policy
+        address: Social Ecology II
+        city: Irvine
+        region: CA
+        postal-code: "92697"
+        country: USA
+
+thanks: >-
+  The author thanks the specimen's acknowledgments belong on the title page
+  and nowhere in the blind manuscript.
+
+funding-statement: >-
+  The specimen's funding statement, as the journal's title page asks for it.
+
+additional-info: >-
+  Data and code availability and declarations go here (the hikmah
+  catch-all), as the journal requires.
+
+correspondence-prefix: "Correspondence:"

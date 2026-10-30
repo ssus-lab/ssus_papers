@@ -53,6 +53,61 @@ write the document. Options:
 The repo renders its own specimen: `quarto render` for the pdf,
 `quarto render --to ssus-masthead-html` for the html.
 
+## Submission: the blind manuscript, the title page, the bundle
+
+The repo carries the template's submission machinery as **two sibling
+extension folders** beside `ssus-masthead` (a Quarto format id is
+`<folder>-<base>`, so one folder carries one format per base output; the
+family is the hikmah pattern — `hikmah`, `hikmah-manuscript`,
+`hikmah-response`). Vendor them together, in full:
+
+    cp -R ~/Dropbox/projects/ssus_papers/_extensions/ssus-{masthead,blind,titlepage} <project>/_extensions/
+
+- **`ssus-blind-pdf`** — the blinded manuscript: article class, 12 pt,
+  double-spaced, `pdf-engine: pdflatex` pinned (quarto's default is
+  lualatex; the home render is the journal-polarity render), Computer
+  Modern, running head "Running head: SHORT TITLE", citeproc with the
+  vendored `assets/apa.csl` (references embedded in the .tex — no `.bbl`),
+  black links, and the same abstract/keywords/body machinery the display
+  copy uses. Line numbers are opt-in (`linenumbers: true`).
+- **`ssus-titlepage-pdf`** — the standalone title page: full title, authors
+  with postal affiliations, ORCID (plain URL, not an icon), the
+  corresponding author's contact, word count, short title, funding
+  statement (`funding-statement:` — plain `funding:` collides with a quarto
+  interpretation and reads back as `true`), additional information, and the
+  acknowledgments the blind manuscript cannot carry. Labels set in Nimbus
+  Sans caps for the brand's label voice without any brand font; drop the
+  `helvet` line for a pure-CM page.
+
+**Profiles over one prose source** (the repo's own `_quarto*.yml` are the
+pattern to copy): the base `_quarto.yml` carries title, abstract, keywords,
+date, bibliography, and the body, and carries **no authorship** — quarto
+profiles merge config, so a key present there cannot be removed by a
+profile; identity lives **only** in `_quarto-pretty.yml` (author block with
+ORCID and postal affiliations, `thanks:`, `funding-statement:`,
+`additional-info:`, `correspondence-prefix:`), which the display and the
+title page read; `_quarto-blind.yml` exists for the submission render, its
+overrides all top-level (inside `format:` they leak into the emitted
+preamble — the rentpanel lesson). `anonymous: true` is a comment, not a
+machine key: absence is the mechanism.
+
+**Self-citations** are kept real in v1 — journals running double-blind
+expect a normal reference list and self-references in third person; any
+per-journal suppression is a prose edit, not machinery.
+
+**The bundle** — `./submit.sh [manuscript.qmd]` renders both, stages
+`submission/` (blind `manuscript.pdf`/`.tex`, `title-page.pdf`/`.tex`,
+cover letter if present), collects the .tex's figures preserving its
+relative tree — an asset resolving outside the project root FAILS loud —
+runs the Editorial-Manager parity compile (`pdflatex` twice in the bundle),
+runs the blind-hygiene checklist built from `_quarto-pretty.yml` (identity
+strings must be absent from the blind manuscript's comment-stripped body
+and present on the title page; email/ORCID/thanks-shaped strings; a
+fontspec font command = FAIL; non-ASCII in the body = warning), and writes
+`MANIFEST.txt` with the command log, the checklist result, a file
+inventory with sha256, and the upload mapping. **Check the target journal's
+instructions page before relying on any bundle.**
+
 ## Fonts
 
 Three families are vendored in `_extensions/ssus-masthead/assets/fonts/`

@@ -1,0 +1,25 @@
+# The SUBMISSION profile — the render that builds the blind manuscript.
+#
+#   quarto render template.qmd --profile blind --to ssus-blind-pdf
+#   quarto render title-page.qmd --profile pretty --to ssus-titlepage-pdf
+#
+# (the second command is the title page; it reads the display profile's
+# identity, which is exactly right — the page is the one document that
+# carries the real block. submit.sh runs both and stages the bundle.)
+#
+# Top-level overrides ONLY — the merge trap: overrides inside format: do
+# not shadow the base config, they leak into the emitted LaTeX preamble
+# (rentpanel's lesson; the base thanks: de-blinded a pdf there when
+# shadowed in the wrong place). thanks: "" below is INSURANCE — the base
+# carries no thanks and the ssus-blind partials ignore $ thanks $ outright.
+#
+# Self-citations are kept real (the record: journals running double-blind
+# expect self-references in third person and a normal reference list);
+# the prose is where a per-journal suppression goes, not the machinery.
+
+thanks: ""
+linenumbers: false
+# per-journal knobs shadow the format here, at the top level:
+#   linestretch: 1.5      # some journals want 1.5 spacing, not 2
+#   fontsize: 11pt
+#   linenumbers: true     # Editorial Manager journals often want them

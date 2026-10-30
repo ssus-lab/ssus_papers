@@ -3,6 +3,12 @@
 *_files/
 __pycache__/
 /index.pdf
+/template.pdf
+/title-page.pdf
+/*.tex
+/*.eps
+/*.sh
+!submit.sh
 *.html
 !_extensions/**/*.html
 /.quarto/
@@ -10,3 +16,5 @@ __pycache__/
 /*.ttf
 /*.otf
 /ssus-mark-light.pdf
+/submission/
+/_identity_strings.txt

@@ -1,0 +1,18 @@
+% before-title.tex for ssus-blind — end-of-preamble splices.
+%
+% The page-style definitions that carry template variables live HERE, not
+% in include-in-header: header files are not template-evaluated, so any
+% conditional text in the running head would print raw. Page 1 carries
+% "Running head:", later pages the short title (or the title) itself;
+% page numbers right; no rules.
+\fancypagestyle{normal}{
+  \fancyhf{}
+  \lhead{\uppercase{$if(short-title)$$short-title$$else$$title$$endif$}}
+  \rhead{\thepage}
+}
+\fancypagestyle{title}{
+  \fancyhf{}
+  \lhead{Running head: \uppercase{$if(short-title)$$short-title$$else$$title$$endif$}}
+  \rhead{\thepage}
+}
+\pagestyle{normal}

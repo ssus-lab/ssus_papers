@@ -1,0 +1,9 @@
+/*.otf
+/*.ttf
+/ssus-mark-light.pdf
+/index.*
+/template.*
+/title-page.*
+/*_files/
+.DS_Store
+.quarto/

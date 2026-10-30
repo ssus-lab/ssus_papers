@@ -1,0 +1,25 @@
+% title.tex for ssus-blind — quarto's stock title block, adapted.
+%
+% Two differences from the stock block:
+%   1. The thanks splice is GONE: quarto's stock title.tex folds the
+%      acknowledgments into \title, which de-blinds the manuscript;
+%      acknowledgments belong to the title page (ssus-titlepage), not to a
+%      blind cover.
+%   2. \author is emitted only when authors exist — blinding is metadata
+%      absence (the base config carries no author), and plain article has
+%      no crash on a missing author block.
+$if(title)$
+\title{$title$}
+$endif$
+$if(subtitle)$
+\makeatletter
+\providecommand{\subtitle}[1]{%
+  \apptocmd{\@title}{\par #1 \par}{}{}
+}
+\makeatother
+\subtitle{$subtitle$}
+$endif$
+$if(authors)$
+\author{$for(authors)$$it.name.literal$$sep$ \and $endfor$}
+$endif$
+\date{$date$}

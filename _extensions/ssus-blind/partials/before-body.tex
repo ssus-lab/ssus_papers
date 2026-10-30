@@ -1,0 +1,23 @@
+% before-body.tex for ssus-blind — page 1 of the blind manuscript.
+%
+% Title + abstract + keywords start page 1 and the body starts on page 2:
+% the standard double-blind manuscript shape. No masthead, no titlepage
+% environment, no mark, no series line — those belong to the display
+% copy (ssus-masthead, Surface 02). The separate title page is its own
+% document (ssus-titlepage), rendered from the display profile.
+$if(title)$
+\maketitle
+\thispagestyle{title}
+$if(abstract)$
+\begin{abstract}
+\noindent $abstract$
+\end{abstract}
+$endif$
+$if(keywords)$
+\noindent \keywords{$for(keywords)$$keywords$$sep$, $endfor$}
+$endif$
+$if(linenumbers)$
+\linenumbers
+$endif$
+\newpage
+$endif$
