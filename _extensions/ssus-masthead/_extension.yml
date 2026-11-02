@@ -1,12 +1,13 @@
 title: SSUS working-paper masthead format
 author: Eli Knaap
-version: 0.0.5
+version: 0.0.6
 quarto-required: ">=1.4.11"
-# v0.0.5: no functional change — the display formats stand; the
-# ssus-blind and ssus-titlepage formats joined as sibling folders
-# in the same repo (a quarto format id is <folder>-<base>, so one
-# folder carries one config per base format). Vendor all three
-# folders together, in full.
+# v0.0.6: no functional change here — the release that moves submit.sh
+# into ssus-blind and blinds at the source. v0.0.5: the ssus-blind and
+# ssus-titlepage formats joined as sibling folders in the same repo (a
+# quarto format id is <folder>-<base>, so one folder carries one config
+# per base format). Install all three as a dependency, never by copying
+# the folders in: `quarto add ssus-lab/ssus_papers@<tag>`.
 # Built from the hikmah core (Andrew Heiss, andrewheiss/hikmah-academic-quarto
 # v0.0.7, MIT): include-in-header.tex and the before-body/title partials are
 # adapted copies. Retyped to the SSUS brand (IBM Plex Serif and IBM Plex Math
@@ -29,7 +30,7 @@ contributes:
       # the fonts and the mark are copied beside the render, so the
       # extension works at any install depth — org-nested by quarto add
       # (ssus-lab/ssus_papers -> _extensions/ssus-lab/ssus-masthead/) or
-      # hand-vendored (_extensions/ssus-masthead/)
+      # flat (_extensions/ssus-masthead/, as in this repo)
       format-resources:
         - assets/fonts/IBMPlexSerif-Regular.otf
         - assets/fonts/IBMPlexSerif-Italic.otf

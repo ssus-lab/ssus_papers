@@ -4,9 +4,9 @@
 % (andrewheiss/hikmah-academic-quarto, MIT); differences: no orcid icon
 % package (plain URL text), no hikmah-specific author-title key, a Funding
 % block, and a standalone-document layout. Identity arrives from the
-% display profile (_quarto-pretty.yml in the template), so this page
-% always carries the real block — rendering it under a blind profile
-% yields a guarded, authorless page, which submit.sh treats as a failure.
+% project's config (_quarto.yml in the template), so this page always
+% carries the real block; submit.sh's checklist warns when a name is
+% missing from it.
 \thispagestyle{empty}
 \begingroup
 \setlength{\parindent}{0.5in}
@@ -33,7 +33,11 @@ $endif$
 $if(by-author)$
 \ssustplabel{Authors}
 $for(by-author)$
-\noindent $it.name.literal$$if(it.orcid)$ \hfill {\small \url{https://orcid.org/$it.orcid$}}$endif$\par
+% Each author's email and ORCID share the right side of the name line:
+% SMR-style title pages want both printed for every author, not only the
+% corresponding one's.
+\noindent $it.name.literal$\hfill{\small
+$if(it.email)$\href{mailto:$it.email$}{$it.email$}$if(it.orcid)$\quad$endif$$endif$$if(it.orcid)$\url{https://orcid.org/$it.orcid$}$endif$}\par
 $for(it.affiliations)$
 {\raggedright \hspace{0.5in}$if(it.department)$$it.department$, $endif$$it.name$$if(it.city)$, $it.city$$endif$$if(it.region)$, $it.region$$endif$$if(it.postal-code)$ $it.postal-code$$endif$$if(it.country)$, $it.country$$endif$\par}
 $endfor$

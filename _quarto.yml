@@ -1,14 +1,18 @@
 project:
   type: default
 
-# The template's BASE config: everything the copies share — title,
-# abstract, keywords, date, bibliography, and the body. It carries NO
-# authorship: quarto profiles merge config, so a key present here cannot be
-# removed by a profile — the identity keys live only in _quarto-pretty.yml,
-# and the blind copy gets them by never asking for them (blinding is
-# metadata absence, not editing). This is the rentpanel lesson (see
-# _quarto-blind.yml), the trap logdet's render-blind.sh once worked around
-# with a config swap.
+# The template's config: one file, the copies share it — title, abstract,
+# keywords, date, bibliography, the body, and the full author block. The
+# COPIES decide what they emit: the display format (ssus-masthead) renders
+# the identity; the blind format (ssus-blind) omits it by construction (its
+# title.tex emits no author and no thanks, whatever the config carries —
+# quarto profiles merge, so removal-by-profile was never sound: the
+# rentpanel lesson, logdet's config-swap script its workaround); the title
+# page (ssus-titlepage) reads the block in full from here.
+#
+# A paper may still split identity into its own profile file if it wants
+# (the blind profile in _quarto-blind.yml then simply does not carry it);
+# the template does not require it.
 #
 # The display format is the project default; every copy of the template
 # renders it.
@@ -20,3 +24,27 @@ abstract: >-
   One paragraph set in the display and blind targets, exercising the type,
   the series line, and the footer rule.
 keywords: [specimen, masthead]
+
+author:
+  - name: Eli Knaap
+    email: eknaap@uci.edu
+    orcid: 0000-0001-7520-2238
+    attributes:
+      corresponding: true
+    affiliations:
+      - name: University of California, Irvine
+        department: Department of Urban Planning and Public Policy
+        address: Social Ecology II
+        city: Irvine
+        region: CA
+        postal-code: "92697"
+        country: USA
+
+thanks: >-
+  The specimen's acknowledgments, printed on the title page only.
+funding-statement: >-
+  The specimen's funding statement, as the journal's title page asks for it.
+additional-info: >-
+  Data and code availability and declarations go here (the hikmah
+  catch-all), as the journal requires.
+correspondence-prefix: "Correspondence:"

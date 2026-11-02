@@ -1,6 +1,6 @@
 title: SSUS blind manuscript format
 author: Eli Knaap
-version: 0.0.1
+version: 0.0.2
 quarto-required: ">=1.4.11"
 
 # The pdfLaTeX-safe blind manuscript — the "submission" copy of Eli's ssus
@@ -16,18 +16,25 @@ quarto-required: ">=1.4.11"
 # build (Editorial Manager's is pdfLaTeX, so the format pins pdflatex —
 # quarto's default is lualatex).
 #
-# Blinding is metadata absence, never editing: the base _quarto.yml carries
-# no authorship (profiles cannot remove a merged key — the rentpanel
-# lesson); the real author block, thanks, funding, and correspondence live
-# in _quarto-pretty.yml and never merge into a render that does not ask for
-# them. `anonymous: true` in a project file is a human-facing comment, not a
-# machine key. Self-citations (Eli's 2026-10-16 spec: "as the journal
-# asks") are kept real in v1 and referred to in third person in the prose;
-# the submit.sh checklist is the hygiene net, not the mechanism.
+# Blinding by construction, never editing: the project's config carries the
+# real author block, thanks, funding, and correspondence (the display copy
+# and the title page read them), and this format omits them. blind.lua drops
+# every identity key from the metadata before pandoc writes the .tex, so no
+# author-derived line reaches the kept source — hyperref's pdfauthor
+# included; title.tex emits no author and the header turns \thanks into a
+# no-op, as backstops. (Profiles cannot remove a merged key — the rentpanel
+# lesson — so removal-by-profile was never sound.) Self-citations (Eli's
+# 2026-10-16 spec: "as the journal asks") are kept real and referred to in
+# third person in the prose; the submit.sh checklist is the hygiene net, not
+# the mechanism.
 #
-# Vendor with its siblings, in full: a partial re-sync once left a stale
-# vendor elsewhere in the house and quarto silently fell back to plain
-# pdf/html.
+# submit.sh, beside this file, stages the journal bundle; run it from the
+# project: _extensions/ssus-lab/ssus-blind/submit.sh MANUSCRIPT.
+#
+# Install as a dependency with its siblings, never by copying the folders
+# in: `quarto add ssus-lab/ssus_papers@<tag>`. A hand copy, partially
+# re-synced, once left a stale format elsewhere in the house, and quarto
+# silently fell back to plain pdf/html.
 
 contributes:
   formats:
@@ -56,6 +63,9 @@ contributes:
       urlcolor: black
       citecolor: black
       biblio-title: "References"
+      filters:
+        - path: blind.lua
+          at: post-render
       template-partials:
         - partials/before-title.tex
         - partials/title.tex

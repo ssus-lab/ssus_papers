@@ -1,10 +1,10 @@
 ---
-# The template's body. Its title, abstract, and keywords live in
-# _quarto.yml (base); its authorship, acknowledgments, funding, and
-# correspondence live in _quarto-pretty.yml (display); the blind copy reads
-# neither and renders with --profile blind (see _quarto-blind.yml and
-# submit.sh). A paper created by `quarto use template` renames this file
-# and keeps pointing at those three files.
+# The template's body. Its title, abstract, keywords, authorship,
+# acknowledgments, funding, and correspondence live in _quarto.yml; the
+# blind copy renders with --profile blind and its format omits the identity
+# (see _quarto-blind.yml and _extensions/ssus-blind/submit.sh). A paper
+# created by `quarto use template` renames this file and keeps pointing at
+# those files.
 ---
 
 The masthead carries the working-paper identity; the body demonstrates the
