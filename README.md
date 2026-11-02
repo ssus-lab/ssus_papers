@@ -115,6 +115,48 @@ layout: `OUT_DIR`, `PDF_NAME`, `TEX_NAME`, `TITLEPAGE_PROFILE`, and
 `FIGS_FLAT=1` for portals with a flat build directory (ScholarOne's). **Check the target journal's
 instructions page before relying on any bundle.**
 
+## Tables: `ssus_papers.tables`
+
+Analysis writes raw outputs (CSV) and can be rerun at will; a separate
+formatting script reads them and builds each table, so formatting touches
+presentation only and no result is typed into a manuscript. `python/` holds
+the Python side of that step, a package with no dependencies beyond pandoc
+on the path (Quarto's bundled copy serves). A project installs it with pixi
+from the same tag as the formats:
+
+    pixi add --pypi ssus-papers --git https://github.com/ssus-lab/ssus_papers --tag v0.0.7 --subdirectory python
+
+`Table` takes Markdown cells, already formatted, and writes one Quarto include
+holding the table as raw LaTeX, typst, and HTML under a `#tbl-` div, the
+caption in the div; each output keeps its own block:
+
+```python
+from ssus_papers import Table
+
+Table(
+    label="kr",
+    caption="Rank-order indices for California's twenty-one metropolitan areas …",
+    header=["Region", "Tracts", "$K^R$", "Pseudo p-value", ...],
+    rows=rows,                      # lists of formatted strings
+    align="lrrrrrrr",
+    top=[("", 1), ("SAR", 2), ...], # optional spanners, ruled beneath
+    groups=[7, 14],                 # optional panels, a gap before each
+    size=9, colsep=10, landscape=False,
+).write("paper/_tbl_kr.md")
+```
+
+and in the paper, `{{< include _tbl_kr.md >}}`. It draws the booktabs
+grammar in each language — spanner rules trimmed like `\cmidrule(lr)`,
+panel gaps, a header repeated on later pages — sets true minus signs, and
+keeps typst body cells from wrapping. A landscape table goes in Quarto's
+`.landscape` div, so the caption turns with it. It never computes or rounds.
+
+The LaTeX needs `booktabs` and `longtable` loaded (pandoc's template loads
+them only when a document has a Markdown table); a long typst table needs
+`#show figure.where(kind: "quarto-float-tbl"): set block(breakable: true)`.
+Not yet: decimal alignment, multirow, notes under the rule, docx, and
+"continued on next page" in typst. Tests: `cd python && PYTHONPATH=. pytest`.
+
 ## Fonts
 
 Three families are vendored in `_extensions/ssus-masthead/assets/fonts/`

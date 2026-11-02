@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ssus-papers"
+version = "0.0.7"
+description = "Presentation helpers for SSUS papers: tables set once for LaTeX, typst, and HTML"
+requires-python = ">=3.10"
+# no Python dependencies; pandoc (standalone, or Quarto's bundled copy) must be on PATH
+
+[tool.setuptools]
+packages = ["ssus_papers"]

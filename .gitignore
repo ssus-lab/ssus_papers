@@ -17,3 +17,6 @@ __pycache__/
 /ssus-mark-light.pdf
 /submission/
 /_identity_strings.txt
+.pytest_cache/
+*.egg-info/
+build/
