@@ -6,8 +6,8 @@
 -- the block can then reach the kept source a journal's portal receives:
 -- not \author, not \thanks, and not hyperref's pdfauthor, which pandoc
 -- builds from `author` in a template partial no format partial can reach.
--- The partials and the header's no-op \thanks stay as backstops; submit.sh's
--- checklist is the net.
+-- The partials and the header's no-op \thanks stay as backstops; the
+-- checklist in ssus_papers.submit is the net.
 
 local identity = {
   "author", "authors", "by-author", "by-affiliation", "affiliations",

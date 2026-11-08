@@ -1,6 +1,6 @@
 title: SSUS title-page format
 author: Eli Knaap
-version: 0.0.2
+version: 0.0.3
 quarto-required: ">=1.4.11"
 
 # The standalone submission title page — the separate document journals

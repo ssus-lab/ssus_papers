@@ -5,8 +5,8 @@
 #
 #   quarto render title-page.qmd --to ssus-titlepage-pdf
 #
-# submit.sh renders it on the base config (or on TITLEPAGE_PROFILE, for a
-# paper that keeps its identity in a profile), and its checklist warns when
+# Render it on the base config (or with --profile, for a paper that keeps
+# its identity in a profile); the checklist in ssus_papers.submit warns when
 # a name is missing from the page.
 format: ssus-titlepage-pdf
 ---

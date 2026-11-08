@@ -5,7 +5,8 @@
 #
 # (the second command is the title page; it reads the real block from
 # _quarto.yml, which is exactly right — the page is the one submission
-# document that carries it. submit.sh runs both and stages the bundle.)
+# document that carries it. After both, `python -m ssus_papers.submit`
+# stages the bundle.)
 #
 # This profile does not blind: the base config carries the identity, and a
 # profile cannot remove a merged key. The format blinds (ssus-blind's

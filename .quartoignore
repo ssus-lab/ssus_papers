@@ -1,10 +1,21 @@
-/*.otf
-/*.ttf
-/ssus-mark-light.pdf
-/index.*
-/template.*
-/title-page.*
-/*_files/
-.DS_Store
-.quarto/
-/python/
+# What `quarto use template ssus-lab/ssus_papers@<tag>` leaves out of a
+# paper's folder. Quarto already skips dotfiles, README.md, and _extensions/
+# (installed separately). Patterns must be bare: a rooted pattern
+# (/python/) matches nothing in .quartoignore (Quarto 1.11.9).
+#
+# the Python package, which a project installs with pixi
+python/
+# the blind specimen kept in the repo
+blind.pdf
+# render byproducts, present only when the source is a local checkout
+*.otf
+*.ttf
+ssus-mark-light.pdf
+index.*
+template.pdf
+template.tex
+template.html
+title-page.pdf
+title-page.tex
+*_files/
+submission/

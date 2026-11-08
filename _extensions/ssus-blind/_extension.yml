@@ -1,6 +1,6 @@
 title: SSUS blind manuscript format
 author: Eli Knaap
-version: 0.0.2
+version: 0.0.3
 quarto-required: ">=1.4.11"
 
 # The pdfLaTeX-safe blind manuscript — the "submission" copy of Eli's ssus
@@ -25,11 +25,13 @@ quarto-required: ">=1.4.11"
 # no-op, as backstops. (Profiles cannot remove a merged key — the rentpanel
 # lesson — so removal-by-profile was never sound.) Self-citations (Eli's
 # 2026-10-16 spec: "as the journal asks") are kept real and referred to in
-# third person in the prose; the submit.sh checklist is the hygiene net, not
-# the mechanism.
+# third person in the prose; the submission checklist is the hygiene net,
+# not the mechanism.
 #
-# submit.sh, beside this file, stages the journal bundle; run it from the
-# project: _extensions/ssus-lab/ssus-blind/submit.sh MANUSCRIPT.
+# The journal bundle is staged by ssus_papers.submit (python/ in this repo,
+# installed by pixi from the same tag), run after this render and the title
+# page's: `python -m ssus_papers.submit MANUSCRIPT`. Until v0.0.6 it was
+# submit.sh, beside this file.
 #
 # Install as a dependency with its siblings, never by copying the folders
 # in: `quarto add ssus-lab/ssus_papers@<tag>`. A hand copy, partially

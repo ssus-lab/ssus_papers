@@ -4,15 +4,23 @@ The repo of the SSUS paper formats: three Quarto extensions that build every
 copy a paper needs over its life from prose written once. `ssus-masthead`
 contributes `ssus-masthead-pdf` and `ssus-masthead-html`, the working-paper
 copy, the one spatialscience.org links as a preprint; `ssus-blind`
-contributes `ssus-blind-pdf`, the blinded manuscript, and carries
-`submit.sh`, which stages a journal's bundle; `ssus-titlepage` contributes
-`ssus-titlepage-pdf`, the separate title page. A paper's project takes them
-as a dependency into its `paper/` folder; the project layout is
-`ssus_paper_template`.
+contributes `ssus-blind-pdf`, the blinded manuscript; `ssus-titlepage`
+contributes `ssus-titlepage-pdf`, the separate title page. Beside them,
+`python/` holds a small package: `ssus_papers.tables` sets a paper's tables
+and `ssus_papers.submit` stages a journal's bundle. A paper's project takes
+the formats as a dependency into its `paper/` folder and the package into
+its pixi environment; the project layout is `ssus_paper_template`.
 
-Install from a release tag:
+Start a paper in an empty folder:
 
-    quarto add ssus-lab/ssus_papers@v0.0.6
+    quarto use template ssus-lab/ssus_papers@v0.0.7 --no-prompt
+
+It installs the three formats and copies the starter: `template.qmd`,
+renamed after the folder (`paper/paper.qmd`), `title-page.qmd`,
+`_quarto.yml`, and `_quarto-blind.yml`. Install into an existing project
+from a release tag:
+
+    quarto add ssus-lab/ssus_papers@v0.0.7
 
 All three land at `_extensions/ssus-lab/<name>/`, and `quarto update
 extension ssus-lab/ssus_papers` takes a later release. The ref after `@`
@@ -90,30 +98,33 @@ present in the base cannot be removed by a profile; blinding by profile was
 never sound (the rentpanel lesson). `_quarto-blind.yml` carries per-journal
 knobs for the submission render, its overrides all top-level (inside
 `format:` they leak into the emitted preamble). A paper may still keep its
-identity in a profile of its own; `submit.sh` then takes that profile in
-`TITLEPAGE_PROFILE`.
+identity in a profile of its own; its title page then renders with that
+profile.
 
 **Self-citations** are kept real in v1 — journals running double-blind
 expect a normal reference list and self-references in third person; any
 per-journal suppression is a prose edit, not machinery.
 
-**The bundle** — from the project root,
-`_extensions/ssus-lab/ssus-blind/submit.sh [manuscript.qmd]` (in this repo,
-`_extensions/ssus-blind/submit.sh`) renders both, stages
-`submission/` (blind `manuscript.pdf`/`.tex`, `title-page.pdf`/`.tex`,
-cover letter if present), collects the .tex's figures preserving its
-relative tree — an asset resolving outside the project root FAILS loud —
-runs the Editorial-Manager parity compile (`pdflatex` twice in the bundle),
-runs the blind-hygiene checklist built from the author block in
-`_quarto.yml` (identity strings must be absent from the blind manuscript's
-comment-stripped text — preamble and body, up to the reference list — and
-present on the title page; email/ORCID/thanks-shaped strings; a fontspec
-font command = FAIL; non-ASCII in the body = warning), and writes
-`MANIFEST.txt` with the command log, the checklist result, a file inventory
-with sha256, and the upload mapping. Environment overrides fit a project's
-layout: `OUT_DIR`, `PDF_NAME`, `TEX_NAME`, `TITLEPAGE_PROFILE`, and
-`FIGS_FLAT=1` for portals with a flat build directory (ScholarOne's). **Check the target journal's
-instructions page before relying on any bundle.**
+**The bundle** — after the blind and title-page renders, run
+`python -m ssus_papers.submit [paper.qmd]` from the Quarto project root; in
+a project laid out by `ssus_paper_template`, `pixi run submit` runs the two
+renders and then this. It stages `submission/`: the blind
+`manuscript.pdf`/`.tex`, `title-page.pdf`/`.tex`, and a rendered
+`cover_letter.pdf` if there is one. It collects the figures the .tex
+includes, keeping their relative paths, and fails on a figure that is
+missing or resolves outside the project. It strips the two guarded package
+loads (`footnotehyper`, `xurl`) that ScholarOne's tex scanner flags as
+missing. It runs the blind-hygiene checklist built from the author block in
+`_quarto.yml`: identity strings must be absent from the blind manuscript's
+comment-stripped text (preamble and body, up to the reference list) and
+present on the title page; email-, ORCID-, and thanks-shaped strings and a
+fontspec font command fail; non-ASCII in the body warns. Last, it writes
+`MANIFEST.txt` with the checklist result and a sha256 inventory, and it
+exits 1 on any failure. Options fit a project's layout: `--out-dir`, `--pdf`
+(the blind render's pdf, default `blind.pdf`), `--bundle`, and `--flat` for
+portals with a flat build directory (ScholarOne's). It renders and compiles
+nothing and touches no git state. **Check the target journal's instructions
+page before relying on any bundle.**
 
 ## Tables: `ssus_papers.tables`
 
