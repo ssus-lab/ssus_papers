@@ -19,3 +19,5 @@ title-page.pdf
 title-page.tex
 *_files/
 submission/
+# the blind compile directory, left only by a failed render
+_blind/

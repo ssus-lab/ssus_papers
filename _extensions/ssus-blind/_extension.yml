@@ -44,6 +44,12 @@ contributes:
       # its own output name: the submission copy must not stomp the display
       # document's artifacts (both default to the input's stem)
       output-file: blind
+      # and its own compile directory: quarto compiles <stem>.tex to
+      # <stem>.pdf and then renames it to the output-file, which deleted the
+      # display copy's <stem>.pdf beside the input. Quarto removes the
+      # directory after the compile; keep-tex still leaves <stem>.tex beside
+      # the input.
+      latex-output-dir: _blind
       documentclass: article
       papersize: letter
       fontsize: 12pt
