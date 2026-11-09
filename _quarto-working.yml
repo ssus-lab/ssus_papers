@@ -1,0 +1,13 @@
+# The WORKING-PAPER profile, the default (profile: default: working in
+# _quarto.yml) — the branded copy, pdf and html:
+#
+#   quarto render template.qmd
+#
+# writes _output/working/<stem>.pdf and _output/working/<stem>.html.
+
+project:
+  output-dir: _output/working
+
+format:
+  ssus-masthead-pdf: default
+  ssus-masthead-html: default

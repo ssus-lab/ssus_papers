@@ -1,30 +1,39 @@
-"""Stage a journal's upload bundle from the rendered blind manuscript and title page.
+"""Freeze a journal submission: the upload bundle and the source it came from.
 
-Run it from the paper's Quarto project root, after both renders:
+After the blind and title-page renders, which write ``_output/blind/`` and
+``_output/titlepage/`` in the paper's Quarto project:
 
-    quarto render paper.qmd --profile blind --to ssus-blind-pdf
-    quarto render title-page.qmd --to ssus-titlepage-pdf
-    python -m ssus_papers.submit paper.qmd
+    quarto render paper.qmd --profile blind
+    quarto render title-page.qmd --profile titlepage
+    python -m ssus_papers.submit LABEL --paper paper
 
 A project in the ssus_paper_template layout runs all three as
-`pixi run submit`. This module renders nothing and touches no git state.
+``pixi run submit LABEL``. This module renders nothing and touches no git
+state.
 
-It copies the blind manuscript (pdf and tex), the title page (pdf and tex),
-a cover letter if one is rendered, and every figure the manuscript's tex
-includes into ``submission/``; strips the two guarded package loads that
-journal portals' tex scanners flag as missing; runs the blind-hygiene
-checklist, built from the identity in ``_quarto.yml``; and writes
-``MANIFEST.txt``. It exits 1 on any failure.
+``submissions/LABEL/`` receives the blind manuscript (pdf and tex), the
+title page (pdf and tex), a rendered cover letter if there is one, every
+figure the manuscript's tex includes, ``MANIFEST.txt``, and ``source/``: a
+copy of the paper's Quarto project as rendered (sources, includes, figures,
+bibliography, installed extensions), placed at the paper's path, so qdiff
+can take it as the old side of a diff (``qdiff submissions/LABEL/source .
+--entry paper/paper.qmd --profile blind``). The bundle's tex has the two
+guarded package loads journal portals' scanners flag as missing stripped,
+and the blind-hygiene checklist, built from the identity in ``_quarto.yml``,
+must pass. A submission is frozen once: an existing label is refused, and a
+failing bundle leaves nothing behind. It exits 1 on any failure.
 """
 
 from __future__ import annotations
 
 import argparse
+import os
 import hashlib
 import re
 import shutil
 import sys
 from datetime import datetime
+from fnmatch import fnmatch
 from pathlib import Path
 
 # Journal portals' tex scanners read \usepackage tokens without honoring
@@ -165,37 +174,72 @@ def check(body: str, title_page: str, identity: list[tuple[str, str]]) -> tuple[
     return failures, warnings
 
 
+
 class StageError(Exception):
-    """A bundle that cannot be built: a missing render or an outside figure."""
+    """A submission that cannot be frozen: a missing render, an outside figure, a used label."""
 
 
-def stage(root: Path, manuscript: str, *, bundle: str = "submission",
-          pdf: str = "blind.pdf", out_dir: str = "", flat: bool = False) -> Path:
-    """Copy the upload files into ``root/bundle`` and return its path.
+# What the source snapshot leaves out of the paper's project: render outputs
+# and caches at any depth, earlier bundles, and the fonts and mark the
+# formats copy beside an input (format-resources), at the top level only, so
+# the project's own figures and the installed extensions' fonts stay.
+SNAPSHOT_SKIP_DIRS = {"_output", ".quarto", ".qdiff", "__pycache__", ".git", ".pixi",
+                      "submission", "submissions"}
+SNAPSHOT_SKIP_TOP = ("*.ttf", "*.otf", "ssus-mark-*.pdf", "ssus-mark-*.svg", "mathjax-config.js")
 
-    ``pdf`` is the blind render's output (ssus-blind writes blind.pdf);
-    ``out_dir`` is the project's output-dir, where the pdfs land, while
-    keep-tex leaves each .tex beside its input.
+
+def snapshot(paper: Path, dest: Path, *, skip: tuple[Path, ...] = ()) -> int:
+    """Copy the paper's Quarto project into ``dest`` without its render outputs.
+
+    Skips the folders in ``SNAPSHOT_SKIP_DIRS`` and every ``*_files/`` folder
+    at any depth, the format byproducts at the top level, and each path in
+    ``skip``. Returns the number of files copied.
     """
-    stem = Path(manuscript).stem
-    out = root / out_dir
+    paper = paper.resolve()
+    skip_set = {p.resolve() for p in skip}
+    count = 0
+    for d, dirs, files in os.walk(paper):
+        here = Path(d)
+        dirs[:] = sorted(x for x in dirs
+                         if x not in SNAPSHOT_SKIP_DIRS and not x.endswith("_files")
+                         and (here / x).resolve() not in skip_set)
+        for name in sorted(files):
+            if name == ".DS_Store":
+                continue
+            if here == paper and any(fnmatch(name, pat) for pat in SNAPSHOT_SKIP_TOP):
+                continue
+            src = here / name
+            target = dest / src.relative_to(paper)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src, target)
+            count += 1
+    return count
+
+
+def stage(paper: Path, dest: Path, *, output: str = "_output", flat: bool = False) -> None:
+    """Copy the upload files and the manuscript's figures into ``dest``, a new folder.
+
+    Reads ``<output>/blind/blind.{pdf,tex}`` and
+    ``<output>/titlepage/titlepage.{pdf,tex}`` in the paper's project. A
+    figure resolves against the blind output folder, where Quarto copies the
+    resources a render uses, and then against the project.
+    """
+    out = paper / output
+    blind, titlepage = out / "blind", out / "titlepage"
     sources = {
-        "manuscript.pdf": out / pdf,
-        "manuscript.tex": root / f"{stem}.tex",
-        "title-page.pdf": out / "title-page.pdf",
-        "title-page.tex": root / "title-page.tex",
+        "manuscript.pdf": blind / "blind.pdf",
+        "manuscript.tex": blind / "blind.tex",
+        "title-page.pdf": titlepage / "titlepage.pdf",
+        "title-page.tex": titlepage / "titlepage.tex",
     }
-    missing = [str(p.relative_to(root)) for p in sources.values() if not p.is_file()]
+    missing = [str(p.relative_to(paper)) for p in sources.values() if not p.is_file()]
     if missing:
         raise StageError("not rendered: " + ", ".join(missing)
-                         + " (run the blind and title-page renders first; keep-tex must stay on)")
-    dest = root / bundle
-    if dest.exists():
-        shutil.rmtree(dest)
+                         + " (render the blind and titlepage profiles first)")
     dest.mkdir(parents=True)
     for name, src in sources.items():
         shutil.copy2(src, dest / name)
-    for letter in (out / "cover_letter.pdf", root / "cover_letter.pdf"):
+    for letter in [*sorted(out.glob("*/cover_letter.pdf")), paper / "cover_letter.pdf"]:
         if letter.is_file():
             shutil.copy2(letter, dest / letter.name)
             break
@@ -203,7 +247,7 @@ def stage(root: Path, manuscript: str, *, bundle: str = "submission",
     tex_path = dest / "manuscript.tex"
     tex = tex_path.read_text(encoding="utf-8")
     for p in figure_paths(tex):
-        src = resolve_figure(p, root)
+        src = resolve_figure(p, blind) or resolve_figure(p, paper)
         if src is None:
             raise StageError(f"figure {p} resolves nowhere inside the project; move it in")
         if not flat and ".." in Path(p).parts:
@@ -224,19 +268,32 @@ def stage(root: Path, manuscript: str, *, bundle: str = "submission",
         if drifted:
             print(f"WARN  {name}: footnotehyper/xurl still mentioned after the strip "
                   "(pandoc's template drifted; update ssus_papers.submit's patterns)")
-    return dest
 
 
-def write_manifest(dest: Path, failures: list[str], warnings: list[str]) -> None:
-    """MANIFEST.txt: the checklist's result and every file with its sha256."""
-    lines = [f"submission bundle — {datetime.now():%Y-%m-%d %H:%M}",
-             "checklist: " + ("ALL PASS" if not failures else "FAILURES — DO NOT SUBMIT")]
-    lines += [f"  FAIL  {f}" for f in failures] + [f"  WARN  {w}" for w in warnings]
-    lines.append("files:")
-    for path in sorted(p for p in dest.rglob("*") if p.is_file() and p.name != "MANIFEST.txt"):
-        digest = hashlib.sha256(path.read_bytes()).hexdigest()
-        lines.append(f"  {digest}  {path.relative_to(dest)}")
-    lines += ["",
+def tree_digest(root: Path) -> tuple[int, str]:
+    """The number of files under ``root`` and one sha256 over their paths and contents."""
+    h = hashlib.sha256()
+    files = sorted(p for p in root.rglob("*") if p.is_file())
+    for p in files:
+        h.update(p.relative_to(root).as_posix().encode() + b"\0")
+        h.update(hashlib.sha256(p.read_bytes()).digest())
+    return len(files), h.hexdigest()
+
+
+def write_manifest(dest: Path, label: str, warnings: list[str]) -> None:
+    """MANIFEST.txt: the label, the checklist, each upload file's sha256, the source's digest."""
+    lines = [f"submission {label} — {datetime.now():%Y-%m-%d %H:%M}",
+             "checklist: ALL PASS"]
+    lines += [f"  WARN  {w}" for w in warnings]
+    lines.append("bundle:")
+    for path in sorted(p for p in dest.rglob("*") if p.is_file()):
+        rel = path.relative_to(dest)
+        if rel.parts[0] in ("source", "MANIFEST.txt"):
+            continue
+        lines.append(f"  {hashlib.sha256(path.read_bytes()).hexdigest()}  {rel.as_posix()}")
+    n, digest = tree_digest(dest / "source")
+    lines += [f"source/: {n} files, tree sha256 {digest}",
+              "",
               "upload: manuscript.tex (or manuscript.pdf) and each figure file;",
               "title-page.pdf in its own field; the cover letter where asked.",
               "CHECK THE TARGET JOURNAL'S INSTRUCTIONS PAGE BEFORE RELYING ON THIS BUNDLE."]
@@ -246,40 +303,58 @@ def write_manifest(dest: Path, failures: list[str], warnings: list[str]) -> None
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="python -m ssus_papers.submit",
-        description="Stage the submission bundle from the rendered blind manuscript and title page.")
-    parser.add_argument("manuscript", nargs="?", default="paper.qmd",
-                        help="the manuscript's source, which names its .tex (default: paper.qmd)")
-    parser.add_argument("--bundle", default="submission", help="the bundle folder (default: submission)")
-    parser.add_argument("--pdf", default="blind.pdf", help="the blind render's pdf (default: blind.pdf)")
-    parser.add_argument("--out-dir", default="", help="the project's output-dir, if it sets one")
+        description="Freeze a submission: the upload bundle from the rendered blind manuscript "
+                    "and title page, and a snapshot of the paper's source.")
+    parser.add_argument("label", help="the submission's name, e.g. smr-2026-11; frozen once")
+    parser.add_argument("--paper", default=".", help="the paper's Quarto project (default: .)")
+    parser.add_argument("--into", default="submissions",
+                        help="the folder that keeps every submission (default: submissions)")
+    parser.add_argument("--output", default="_output",
+                        help="the project's output folder, holding blind/ and titlepage/ (default: _output)")
     parser.add_argument("--flat", action="store_true",
                         help="bare figure filenames, for portals with a flat build directory (ScholarOne)")
     args = parser.parse_args(argv)
 
-    root = Path.cwd()
-    config = root / "_quarto.yml"
+    paper, into = Path(args.paper), Path(args.into)
+    config = paper / "_quarto.yml"
     if not config.is_file():
-        print("FAIL  no _quarto.yml: run from the paper's Quarto project root")
+        print(f"FAIL  no _quarto.yml in {paper}: --paper names the paper's Quarto project")
         return 1
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", args.label):
+        print("FAIL  a label takes letters, digits, '.', '_', and '-', and starts with a letter or digit")
+        return 1
+    dest = into / args.label
+    if dest.exists():
+        print(f"FAIL  {dest} exists: a submission is frozen once; choose another label")
+        return 1
+    partial = into / f".{args.label}.partial"
+    shutil.rmtree(partial, ignore_errors=True)
     try:
-        dest = stage(root, args.manuscript, bundle=args.bundle, pdf=args.pdf,
-                     out_dir=args.out_dir, flat=args.flat)
+        stage(paper, partial, output=args.output, flat=args.flat)
+        failures, warnings = check(
+            blind_body((partial / "manuscript.tex").read_text(encoding="utf-8")),
+            (partial / "title-page.tex").read_text(encoding="utf-8"),
+            identity_strings(config.read_text(encoding="utf-8")),
+        )
+        for f in failures:
+            print(f"FAIL  {f}")
+        for w in warnings:
+            print(f"WARN  {w}")
+        if failures:
+            raise StageError("the blind-hygiene checklist failed; nothing was frozen")
+        try:
+            at = paper.resolve().relative_to(Path.cwd().resolve())
+        except ValueError:
+            at = Path(paper.resolve().name)
+        n = snapshot(paper, partial / "source" / at, skip=(into,))
+        write_manifest(partial, args.label, warnings)
+        partial.rename(dest)
     except StageError as err:
         print(f"FAIL  {err}")
+        shutil.rmtree(partial, ignore_errors=True)
         return 1
-    failures, warnings = check(
-        blind_body((dest / "manuscript.tex").read_text(encoding="utf-8")),
-        (dest / "title-page.tex").read_text(encoding="utf-8"),
-        identity_strings(config.read_text(encoding="utf-8")),
-    )
-    for f in failures:
-        print(f"FAIL  {f}")
-    for w in warnings:
-        print(f"WARN  {w}")
-    write_manifest(dest, failures, warnings)
-    print(("checklist: ALL PASS" if not failures else "checklist: FAILURES — DO NOT SUBMIT")
-          + f"; bundle at {dest.relative_to(root)}/, manifest {dest.relative_to(root)}/MANIFEST.txt")
-    return 1 if failures else 0
+    print(f"checklist: ALL PASS; froze {dest}/ (the bundle, MANIFEST.txt, and source/, {n} files)")
+    return 0
 
 
 if __name__ == "__main__":

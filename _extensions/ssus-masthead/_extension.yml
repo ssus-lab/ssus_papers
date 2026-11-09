@@ -1,7 +1,10 @@
 title: SSUS working-paper masthead format
 author: Eli Knaap
-version: 0.0.7
+version: 0.0.8
 quarto-required: ">=1.4.11"
+# v0.0.8: no functional change here — the release that gives each copy its
+# own profile and output folder, and the blind copy and title page a latex
+# output beside the pdf.
 # v0.0.7: no functional change here — the release that ports submit.sh to
 # Python (ssus_papers.submit, python/) and releases ssus_papers.tables.
 # v0.0.6: no functional change here — the release that moves submit.sh

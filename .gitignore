@@ -22,3 +22,7 @@ __pycache__/
 build/
 # the blind compile directory, left only by a failed render
 _blind/
+# every copy's render, by profile
+_output/
+# frozen submissions made from this repo's own specimen
+submissions/

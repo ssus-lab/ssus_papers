@@ -3,10 +3,11 @@
 # thanks, funding, correspondence, and declarations arrive from _quarto.yml
 # at render time, so the real block lives in one place.
 #
-#   quarto render title-page.qmd --to ssus-titlepage-pdf
+#   quarto render title-page.qmd --profile titlepage
 #
-# Render it on the base config (or with --profile, for a paper that keeps
-# its identity in a profile); the checklist in ssus_papers.submit warns when
-# a name is missing from the page.
-format: ssus-titlepage-pdf
+# writes _output/titlepage/titlepage.pdf and titlepage.tex. The checklist
+# in ssus_papers.submit warns when a name is missing from the page.
+format:
+  ssus-titlepage-pdf: default
+  ssus-titlepage-latex: default
 ---

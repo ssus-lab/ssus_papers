@@ -1,0 +1,12 @@
+# The TITLE-PAGE profile — the separate page a double-blind journal takes
+# beside the blind manuscript, pdf and its LaTeX source:
+#
+#   quarto render title-page.qmd --profile titlepage
+#
+# writes _output/titlepage/titlepage.pdf and titlepage.tex. The formats
+# are named in title-page.qmd's front matter, which takes precedence over a
+# profile's. No blind filter here: the page carries the identity in full,
+# read from _quarto.yml.
+
+project:
+  output-dir: _output/titlepage

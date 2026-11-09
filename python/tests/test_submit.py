@@ -81,23 +81,34 @@ def test_check():
 
 
 def project(tmp_path, body="Clean body."):
-    root = tmp_path / "paper"
-    (root / "figures").mkdir(parents=True)
-    (root / "_quarto.yml").write_text(CONFIG)
-    (root / "figures" / "map.pdf").write_bytes(b"%PDF figure")
-    (root / "blind.pdf").write_bytes(b"%PDF blind")
-    (root / "title-page.pdf").write_bytes(b"%PDF title page")
-    (root / "paper.tex").write_text(
+    """A repository in the template's layout, with the blind and title-page renders done."""
+    repo = tmp_path / "repo"
+    paper = repo / "paper"
+    blind, titlepage = paper / "_output" / "blind", paper / "_output" / "titlepage"
+    for d in (paper / "figures", blind / "figures", titlepage, paper / "_extensions" / "fmt" / "fonts",
+              paper / ".quarto", paper / "paper_files"):
+        d.mkdir(parents=True)
+    (paper / "_quarto.yml").write_text(CONFIG)
+    (paper / "paper.qmd").write_text("Clean body.\n\n![A map.](figures/map.pdf)\n")
+    (paper / "figures" / "map.pdf").write_bytes(b"%PDF figure")
+    (paper / "_extensions" / "fmt" / "fonts" / "Face.ttf").write_bytes(b"font")
+    (paper / "Face.ttf").write_bytes(b"a byproduct")
+    (paper / ".quarto" / "cache").write_text("cache")
+    (paper / "paper_files" / "x.js").write_text("asset")
+    (blind / "figures" / "map.pdf").write_bytes(b"%PDF figure")
+    (blind / "blind.pdf").write_bytes(b"%PDF blind")
+    (blind / "blind.tex").write_text(
         PREAMBLE + "\\begin{document}\n" + body + "\n\\includegraphics{figures/map}\n\\end{document}\n")
-    (root / "title-page.tex").write_text("Ada Lovelace, Analytical Engine Society\n")
-    return root
+    (titlepage / "titlepage.pdf").write_bytes(b"%PDF title page")
+    (titlepage / "titlepage.tex").write_text("Ada Lovelace, Analytical Engine Society\n")
+    return repo
 
 
-def test_main_stages_a_clean_bundle(tmp_path, monkeypatch):
-    root = project(tmp_path)
-    monkeypatch.chdir(root)
-    assert submit.main(["paper.qmd"]) == 0
-    dest = root / "submission"
+def test_main_freezes_a_submission(tmp_path, monkeypatch):
+    repo = project(tmp_path)
+    monkeypatch.chdir(repo)
+    assert submit.main(["smr-2026-11", "--paper", "paper"]) == 0
+    dest = repo / "submissions" / "smr-2026-11"
     for name in ("manuscript.pdf", "manuscript.tex", "title-page.pdf", "title-page.tex",
                  "figures/map.pdf", "MANIFEST.txt"):
         assert (dest / name).is_file(), name
@@ -105,26 +116,51 @@ def test_main_stages_a_clean_bundle(tmp_path, monkeypatch):
     manifest = (dest / "MANIFEST.txt").read_text()
     assert "checklist: ALL PASS" in manifest
     assert "figures/map.pdf" in manifest
+    assert "source/: 4 files" in manifest
+    source = dest / "source" / "paper"
+    for name in ("paper.qmd", "_quarto.yml", "figures/map.pdf", "_extensions/fmt/fonts/Face.ttf"):
+        assert (source / name).is_file(), name
+    for name in ("_output", ".quarto", "paper_files", "Face.ttf"):
+        assert not (source / name).exists(), name
+    assert not any(p.name.endswith(".partial") for p in (repo / "submissions").iterdir())
+
+
+def test_main_refuses_a_used_label(tmp_path, monkeypatch):
+    repo = project(tmp_path)
+    monkeypatch.chdir(repo)
+    assert submit.main(["v1", "--paper", "paper"]) == 0
+    manifest = (repo / "submissions" / "v1" / "MANIFEST.txt").read_text()
+    assert submit.main(["v1", "--paper", "paper"]) == 1
+    assert (repo / "submissions" / "v1" / "MANIFEST.txt").read_text() == manifest
 
 
 def test_main_flat(tmp_path, monkeypatch):
-    root = project(tmp_path)
-    monkeypatch.chdir(root)
-    assert submit.main(["paper.qmd", "--flat"]) == 0
-    assert (root / "submission" / "map.pdf").is_file()
-    assert "\\includegraphics{map}" in (root / "submission" / "manuscript.tex").read_text()
+    repo = project(tmp_path)
+    monkeypatch.chdir(repo)
+    assert submit.main(["v1", "--paper", "paper", "--flat"]) == 0
+    dest = repo / "submissions" / "v1"
+    assert (dest / "map.pdf").is_file()
+    assert "\\includegraphics{map}" in (dest / "manuscript.tex").read_text()
 
 
-def test_main_fails_on_a_leak(tmp_path, monkeypatch):
-    root = project(tmp_path, body="Joint work with Ada Lovelace.")
-    monkeypatch.chdir(root)
-    assert submit.main(["paper.qmd"]) == 1
-    assert "DO NOT SUBMIT" in (root / "submission" / "MANIFEST.txt").read_text()
+def test_main_freezes_nothing_on_a_leak(tmp_path, monkeypatch):
+    repo = project(tmp_path, body="Joint work with Ada Lovelace.")
+    monkeypatch.chdir(repo)
+    assert submit.main(["v1", "--paper", "paper"]) == 1
+    assert not (repo / "submissions" / "v1").exists()
+    assert not list((repo / "submissions").iterdir())
 
 
 def test_main_fails_without_renders(tmp_path, monkeypatch):
-    root = project(tmp_path)
-    (root / "blind.pdf").unlink()
-    monkeypatch.chdir(root)
-    assert submit.main(["paper.qmd"]) == 1
-    assert not (root / "submission").exists()
+    repo = project(tmp_path)
+    (repo / "paper" / "_output" / "blind" / "blind.tex").unlink()
+    monkeypatch.chdir(repo)
+    assert submit.main(["v1", "--paper", "paper"]) == 1
+    assert not (repo / "submissions" / "v1").exists()
+
+
+def test_main_rejects_a_bad_label(tmp_path, monkeypatch):
+    repo = project(tmp_path)
+    monkeypatch.chdir(repo)
+    assert submit.main(["../escape", "--paper", "paper"]) == 1
+    assert not (repo / "submissions").exists()

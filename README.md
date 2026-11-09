@@ -7,20 +7,20 @@ copy, the one spatialscience.org links as a preprint; `ssus-blind`
 contributes `ssus-blind-pdf`, the blinded manuscript; `ssus-titlepage`
 contributes `ssus-titlepage-pdf`, the separate title page. Beside them,
 `python/` holds a small package: `ssus_papers.tables` sets a paper's tables
-and `ssus_papers.submit` stages a journal's bundle. A paper's project takes
-the formats as a dependency into its `paper/` folder and the package into
-its pixi environment; the project layout is `ssus_paper_template`.
+and `ssus_papers.submit` freezes a journal submission. A paper's project
+takes the formats as a dependency into its `paper/` folder and the package
+into its pixi environment; the project layout is `ssus_paper_template`.
 
 Start a paper in an empty folder:
 
-    quarto use template ssus-lab/ssus_papers@v0.0.7 --no-prompt
+    quarto use template ssus-lab/ssus_papers@v0.0.8 --no-prompt
 
 It installs the three formats and copies the starter: `template.qmd`,
-renamed after the folder (`paper/paper.qmd`), `title-page.qmd`,
-`_quarto.yml`, and `_quarto-blind.yml`. Install into an existing project
-from a release tag:
+renamed after the folder (`paper/paper.qmd`), `title-page.qmd`, and the four
+config files of the copies (below). Install into an existing project from a
+release tag:
 
-    quarto add ssus-lab/ssus_papers@v0.0.7
+    quarto add ssus-lab/ssus_papers@v0.0.8
 
 All three land at `_extensions/ssus-lab/<name>/`, and `quarto update
 extension ssus-lab/ssus_papers` takes a later release. The ref after `@`
@@ -48,8 +48,8 @@ printed, the APA print convention) for the pdf, `assets/apa-web.csl`
 APA. The html matches the pdf on screen, dark-mode automatic under
 `prefers-color-scheme`.
 
-Set `format: ssus-masthead-pdf` (or render `--to ssus-masthead-html`) and
-write the document. Options:
+The starter's working profile renders both targets; a document of its own
+sets `format: ssus-masthead-pdf` (or `ssus-masthead-html`). Options:
 
 | Option | Target | Effect |
 |---|---|---|
@@ -57,8 +57,30 @@ write the document. Options:
 | `masthead-series: "…"` | both | the mono series line; default `SSUS working paper series` |
 | `masthead-mark-file: path.pdf` | pdf only | a different mark; the html embeds the canonical mark inline |
 
-The repo renders its own specimen: `quarto render` for the pdf,
-`quarto render --to ssus-masthead-html` for the html.
+## The copies: one profile each
+
+Each copy of the paper is a Quarto profile with its own formats and output
+folder, so a bare render builds that copy and nothing else, and no copy's
+render touches another's files:
+
+| Profile | Config | Command | Writes |
+|---|---|---|---|
+| `working` (the default) | `_quarto-working.yml` | `quarto render paper.qmd` | `_output/working/paper.pdf`, `paper.html` |
+| `blind` | `_quarto-blind.yml` | `quarto render paper.qmd --profile blind` | `_output/blind/blind.pdf`, `blind.tex` |
+| `titlepage` | `_quarto-titlepage.yml` | `quarto render title-page.qmd --profile titlepage` | `_output/titlepage/titlepage.pdf`, `titlepage.tex` |
+
+`_quarto.yml` names no format (`profile: default: working`): a profile's
+format map merges with a base format map, and a bare render under the
+blind profile then built every copy's formats. The blind copy and the title
+page each have a `latex` format beside the `pdf`, so the source a portal
+receives is a real output in the profile's folder, beside the pdf, with
+the figures it includes copied beside it; a pdf format's `keep-tex` lands
+as `<stem>.tex` beside the input instead, where the next pdf render of the
+same input deletes it. Both formats of a copy take an output name other
+than the input's stem (`blind`, `titlepage`) for the same reason. `--to`
+takes one format id at a time, so each copy is its own command.
+
+The repo renders its own specimen the same way, from `template.qmd`.
 
 ## Submission: the blind manuscript, the title page, the bundle
 
@@ -97,34 +119,46 @@ block, and the blind format omits it. Quarto profiles merge config, so a key
 present in the base cannot be removed by a profile; blinding by profile was
 never sound (the rentpanel lesson). `_quarto-blind.yml` carries per-journal
 knobs for the submission render, its overrides all top-level (inside
-`format:` they leak into the emitted preamble). A paper may still keep its
-identity in a profile of its own; its title page then renders with that
-profile.
+`format:` they leak into the emitted preamble), and lists `ssus-blind` as a
+filter: `ssus-blind` contributes `blind.lua` as a plain filter too, so any
+render under the blind profile omits the identity, whatever its format —
+qdiff's track-changes copy, rendered to typst with `--profile blind`,
+included.
 
 **Self-citations** are kept real in v1 — journals running double-blind
 expect a normal reference list and self-references in third person; any
 per-journal suppression is a prose edit, not machinery.
 
-**The bundle** — after the blind and title-page renders, run
-`python -m ssus_papers.submit [paper.qmd]` from the Quarto project root; in
-a project laid out by `ssus_paper_template`, `pixi run submit` runs the two
-renders and then this. It stages `submission/`: the blind
-`manuscript.pdf`/`.tex`, `title-page.pdf`/`.tex`, and a rendered
-`cover_letter.pdf` if there is one. It collects the figures the .tex
-includes, keeping their relative paths, and fails on a figure that is
-missing or resolves outside the project. It strips the two guarded package
+**The submission** — after the blind and title-page renders,
+`python -m ssus_papers.submit LABEL --paper paper`, from the repository
+root, freezes `submissions/LABEL/`; in a project laid out by
+`ssus_paper_template`, `pixi run submit LABEL` renders every copy and then
+runs it. The folder holds the upload bundle — the blind
+`manuscript.pdf`/`.tex` and `title-page.pdf`/`.tex` from the profiles'
+output folders, a rendered `cover_letter.pdf` if there is one, and the
+figures the .tex includes, at their relative paths — with `MANIFEST.txt`
+and `source/`: a copy of the paper's Quarto project as rendered (sources,
+includes, figures, bibliography, the installed extensions; no outputs or
+caches), placed at the paper's path. qdiff takes `source/` as the old side
+of a diff, with no tag or worktree: `qdiff submissions/LABEL/source .
+--entry paper/paper.qmd --profile blind` gives an anonymous track-changes
+copy, the old side rendered with the formats it was submitted with.
+
+Before anything is frozen, the bundle's tex has the two guarded package
 loads (`footnotehyper`, `xurl`) that ScholarOne's tex scanner flags as
-missing. It runs the blind-hygiene checklist built from the author block in
-`_quarto.yml`: identity strings must be absent from the blind manuscript's
-comment-stripped text (preamble and body, up to the reference list) and
-present on the title page; email-, ORCID-, and thanks-shaped strings and a
-fontspec font command fail; non-ASCII in the body warns. Last, it writes
-`MANIFEST.txt` with the checklist result and a sha256 inventory, and it
-exits 1 on any failure. Options fit a project's layout: `--out-dir`, `--pdf`
-(the blind render's pdf, default `blind.pdf`), `--bundle`, and `--flat` for
-portals with a flat build directory (ScholarOne's). It renders and compiles
-nothing and touches no git state. **Check the target journal's instructions
-page before relying on any bundle.**
+missing stripped, and the blind-hygiene checklist built from the author
+block in `_quarto.yml` must pass: identity strings absent from the blind
+manuscript's comment-stripped text (preamble and body, up to the reference
+list) and present on the title page; email-, ORCID-, and thanks-shaped
+strings and a fontspec font command fail; non-ASCII in the body warns. A
+failing bundle, a figure missing or outside the project, or a label already
+used leaves nothing behind and exits 1; a submission is frozen once.
+`MANIFEST.txt` records the label, the checklist, each upload file's sha256,
+and one digest over `source/`. Options: `--into` (default `submissions`),
+`--output` (the project's output folder, default `_output`), and `--flat`
+for portals with a flat build directory (ScholarOne's). It renders and
+compiles nothing and touches no git state. **Check the target journal's
+instructions page before relying on any bundle.**
 
 ## Tables: `ssus_papers.tables`
 
@@ -135,7 +169,7 @@ the Python side of that step, a package with no dependencies beyond pandoc
 on the path (Quarto's bundled copy serves). A project installs it with pixi
 from the same tag as the formats:
 
-    pixi add --pypi ssus-papers --git https://github.com/ssus-lab/ssus_papers --tag v0.0.7 --subdirectory python
+    pixi add --pypi ssus-papers --git https://github.com/ssus-lab/ssus_papers --tag v0.0.8 --subdirectory python
 
 `Table` takes Markdown cells, already formatted, and writes one Quarto include
 holding the table as raw LaTeX, typst, and HTML under a `#tbl-` div, the

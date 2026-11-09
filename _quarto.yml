@@ -1,23 +1,31 @@
 project:
   type: default
 
-# The template's config: one file, the copies share it — title, abstract,
-# keywords, date, bibliography, the body, and the full author block. The
-# COPIES decide what they emit: the display format (ssus-masthead) renders
-# the identity; the blind format (ssus-blind) omits it by construction (its
-# title.tex emits no author and no thanks, whatever the config carries —
-# quarto profiles merge, so removal-by-profile was never sound: the
-# rentpanel lesson, logdet's config-swap script its workaround); the title
-# page (ssus-titlepage) reads the block in full from here.
+# Each copy is a profile with its own formats and output folder; a bare
+# render under it builds that copy and nothing else:
 #
-# A paper may still split identity into its own profile file if it wants
-# (the blind profile in _quarto-blind.yml then simply does not carry it);
-# the template does not require it.
+#   quarto render template.qmd                            # working paper
+#   quarto render template.qmd --profile blind            # blind manuscript
+#   quarto render title-page.qmd --profile titlepage      # title page
 #
-# The display format is the project default; every copy of the template
-# renders it.
-
-format: ssus-masthead-pdf
+# working (_quarto-working.yml, the default): ssus-masthead pdf and html,
+#   into _output/working/
+# blind (_quarto-blind.yml): ssus-blind pdf and latex, into _output/blind/
+# titlepage (_quarto-titlepage.yml): the page's own pdf and latex formats,
+#   into _output/titlepage/
+#
+# This base names NO format: a profile's format map merges with a base
+# format map, and a bare render under the blind profile then built every
+# copy's formats (Quarto 1.11.9).
+#
+# This file carries what the copies share — title, abstract, keywords,
+# date, bibliography, and the full author block. The COPIES decide what
+# they emit: the masthead prints the identity; the blind format omits it
+# by construction (blind.lua drops it before pandoc writes the .tex —
+# profiles merge, so removal by profile was never sound: the rentpanel
+# lesson); the title page reads the block in full from here.
+profile:
+  default: working
 
 title: "A working paper specimen"
 abstract: >-

@@ -1,27 +1,38 @@
-# The SUBMISSION profile — the render that builds the blind manuscript.
+# The SUBMISSION profile — the blind manuscript, pdf and its LaTeX source:
 #
-#   quarto render template.qmd --profile blind --to ssus-blind-pdf
-#   quarto render title-page.qmd --to ssus-titlepage-pdf
+#   quarto render template.qmd --profile blind
 #
-# (the second command is the title page; it reads the real block from
-# _quarto.yml, which is exactly right — the page is the one submission
-# document that carries it. After both, `python -m ssus_papers.submit`
-# stages the bundle.)
+# writes _output/blind/blind.pdf and _output/blind/blind.tex, with the
+# figures the source includes copied beside them. The title page is its own
+# profile (_quarto-titlepage.yml), since it is the one submission document
+# that carries the identity. `python -m ssus_papers.submit LABEL` then
+# stages the bundle from both folders.
 #
-# This profile does not blind: the base config carries the identity, and a
-# profile cannot remove a merged key. The format blinds (ssus-blind's
-# blind.lua drops the identity keys before pandoc writes the .tex). This
-# file carries per-journal knobs.
+# The formats blind (ssus-blind's blind.lua drops the identity keys before
+# pandoc writes the source). The profile also lists ssus-blind as a filter,
+# so ANY render under it omits the identity — qdiff's track-changes copy,
+# rendered to typst with `--profile blind`, included. It cannot blind by
+# removing keys: the base config carries the identity, and profiles merge.
 #
-# Top-level overrides ONLY — the merge trap: overrides inside format: do
-# not shadow the base config, they leak into the emitted LaTeX preamble
-# (rentpanel's lesson; the base thanks: de-blinded a pdf there when
-# shadowed in the wrong place). thanks: "" below is INSURANCE behind the
-# format's own omission.
+# Per-journal knobs go here, at the TOP LEVEL only — the merge trap:
+# overrides inside format: do not shadow the base config, they leak into
+# the emitted LaTeX preamble (rentpanel's lesson; the base thanks:
+# de-blinded a pdf there when shadowed in the wrong place). thanks: "" below
+# is INSURANCE behind the format's own omission.
 #
-# Self-citations are kept real (the record: journals running double-blind
-# expect self-references in third person and a normal reference list);
-# the prose is where a per-journal suppression goes, not the machinery.
+# Self-citations are kept real (journals running double-blind expect
+# self-references in third person and a normal reference list); the prose
+# is where a per-journal suppression goes, not the machinery.
+
+project:
+  output-dir: _output/blind
+
+format:
+  ssus-blind-pdf: default
+  ssus-blind-latex: default
+
+filters:
+  - ssus-blind
 
 thanks: ""
 linenumbers: false

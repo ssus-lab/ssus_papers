@@ -21,3 +21,6 @@ title-page.tex
 submission/
 # the blind compile directory, left only by a failed render
 _blind/
+# render outputs and frozen submissions, present only in a local checkout
+_output/
+submissions/
