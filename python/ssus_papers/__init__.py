@@ -9,4 +9,4 @@ journal submission: the upload bundle and a snapshot of the paper's source.
 from .tables import Table
 
 __all__ = ["Table"]
-__version__ = "0.0.8"
+__version__ = "0.0.9"

@@ -1,7 +1,10 @@
 title: SSUS working-paper masthead format
 author: Eli Knaap
-version: 0.0.8
+version: 0.0.9
 quarto-required: ">=1.4.11"
+# v0.0.9: the fonts and the mark are read in place from assets/ —
+# masthead.lua gives the preamble their paths, and nothing is copied beside
+# the input (format-resources retired).
 # v0.0.8: no functional change here — the release that gives each copy its
 # own profile and output folder, and the blind copy and title page a latex
 # output beside the pdf.
@@ -32,25 +35,14 @@ quarto-required: ">=1.4.11"
 contributes:
   formats:
     pdf:
-      # the fonts and the mark are copied beside the render, so the
-      # extension works at any install depth — org-nested by quarto add
+      # the fonts and the mark are read in place from assets/, at any
+      # install depth — org-nested by quarto add
       # (ssus-lab/ssus_papers -> _extensions/ssus-lab/ssus-masthead/) or
-      # flat (_extensions/ssus-masthead/, as in this repo)
-      format-resources:
-        - assets/fonts/IBMPlexSerif-Regular.otf
-        - assets/fonts/IBMPlexSerif-Italic.otf
-        - assets/fonts/IBMPlexSerif-SemiBold.otf
-        - assets/fonts/IBMPlexSerif-SemiBoldItalic.otf
-        - assets/fonts/IBMPlexMath-Regular.otf
-        - assets/fonts/LibreFranklin-Regular.ttf
-        - assets/fonts/LibreFranklin-Italic.ttf
-        - assets/fonts/LibreFranklin-SemiBold.ttf
-        - assets/fonts/LibreFranklin-SemiBoldItalic.ttf
-        - assets/fonts/LibreFranklin-ExtraBold.ttf
-        - assets/fonts/LibreFranklin-ExtraBoldItalic.ttf
-        - assets/fonts/IBMPlexMono-Regular.ttf
-        - assets/fonts/IBMPlexMono-SemiBold.ttf
-        - assets/ssus-mark-light.pdf
+      # flat (_extensions/ssus-masthead/, as in this repo): masthead.lua
+      # gives the preamble their paths, and nothing is copied beside the
+      # input
+      filters:
+        - masthead.lua
       template-partials:
         - "partials/before-title.tex"
         - "partials/before-body.tex"

@@ -180,9 +180,10 @@ class StageError(Exception):
 
 
 # What the source snapshot leaves out of the paper's project: render outputs
-# and caches at any depth, earlier bundles, and the fonts and mark the
-# formats copy beside an input (format-resources), at the top level only, so
-# the project's own figures and the installed extensions' fonts stay.
+# and caches at any depth, earlier bundles, and the fonts and mark that
+# releases before v0.0.9 copied beside an input (format-resources) and a
+# project may still hold, at the top level only, so the project's own
+# figures and the installed extensions' fonts stay.
 SNAPSHOT_SKIP_DIRS = {"_output", ".quarto", ".qdiff", "__pycache__", ".git", ".pixi",
                       "submission", "submissions"}
 SNAPSHOT_SKIP_TOP = ("*.ttf", "*.otf", "ssus-mark-*.pdf", "ssus-mark-*.svg", "mathjax-config.js")

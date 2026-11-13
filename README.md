@@ -13,14 +13,14 @@ into its pixi environment; the project layout is `ssus_paper_template`.
 
 Start a paper in an empty folder:
 
-    quarto use template ssus-lab/ssus_papers@v0.0.8 --no-prompt
+    quarto use template ssus-lab/ssus_papers@v0.0.9 --no-prompt
 
 It installs the three formats and copies the starter: `template.qmd`,
 renamed after the folder (`paper/paper.qmd`), `title-page.qmd`, and the four
 config files of the copies (below). Install into an existing project from a
 release tag:
 
-    quarto add ssus-lab/ssus_papers@v0.0.8
+    quarto add ssus-lab/ssus_papers@v0.0.9
 
 All three land at `_extensions/ssus-lab/<name>/`, and `quarto update
 extension ssus-lab/ssus_papers` takes a later release. The ref after `@`
@@ -31,16 +31,19 @@ manifest, so the project states which tag it uses.
 
 **The repo name and the extension ids are different things.** Each id is
 fixed by its folder inside `_extensions/`, never by the repo's own name.
-Any install depth works: the pdf target declares its fonts and the mark as
-`format-resources`, so quarto copies them beside the render.
+Any install depth works: the fonts and the mark stay in the extension
+folder, and the masthead's filter (`masthead.lua`) gives the pdf's preamble
+their paths, relative to the input's folder. Nothing is copied beside the
+input.
 
-A pdf render scatters the copied fonts and mark beside the input — ignore
-them at the project root so git does not see the byproducts (rooted patterns,
-so an installed extension's own files stay addable):
-
-    /*.ttf
-    /*.otf
-    /ssus-mark-light.pdf
+Never copy an installed extension into another layout with its file times
+kept (`cp -p`, `rsync -a`, a Finder copy). luaotfload caches each font
+under its file name, checks the cache by size and time only, and keeps the
+path it first loaded the font from; two byte-identical, time-identical
+copies at different relative paths then break each other's compiles with
+`cannot find file ''`. `quarto add`, from GitHub or a local checkout,
+stamps fresh times, so installs never collide. If it happens,
+`luaotfload-tool --cache=erase` clears the stale entries.
 
 The two targets differ in bibliography handling — `assets/apa.csl` (DOIs
 printed, the APA print convention) for the pdf, `assets/apa-web.csl`
@@ -169,7 +172,7 @@ the Python side of that step, a package with no dependencies beyond pandoc
 on the path (Quarto's bundled copy serves). A project installs it with pixi
 from the same tag as the formats:
 
-    pixi add --pypi ssus-papers --git https://github.com/ssus-lab/ssus_papers --tag v0.0.8 --subdirectory python
+    pixi add --pypi ssus-papers --git https://github.com/ssus-lab/ssus_papers --tag v0.0.9 --subdirectory python
 
 `Table` takes Markdown cells, already formatted, and writes one Quarto include
 holding the table as raw LaTeX, typst, and HTML under a `#tbl-` div, the
@@ -216,10 +219,14 @@ Mono share a skeleton. Plex Serif and Plex Math are TeX Live's OpenType
 files (v3.001 and v1.000): Google Fonts' Plex Serif is v2.6 and carries no
 Greek. The html keeps its own math method (KaTeX or MathJax). The pdf sets
 11 pt on a 6 in measure (1.25 in side margins).
-The pdf reads the copies quarto makes beside the render (`format-resources`);
-the html's `masthead.css` declares `@font-face` pointing at the in-place
-files — quarto references the css from the installed extension, so the urls
-resolve beside it.
+Both targets read the fonts in place. The pdf's fontspec `Path` and the
+mark's file come from `masthead.lua`, which resolves the extension's
+`assets/` with `quarto.utils.resolve_path` and hands the preamble a path
+relative to the input's folder, where LaTeX runs; the font declarations
+therefore sit in `partials/before-title.tex`, a template, rather than in
+`include-in-header.tex`, which is not. The html's `masthead.css` declares
+`@font-face` pointing at the in-place files — quarto references the css
+from the installed extension, so the urls resolve beside it.
 
 ## Attribution
 

@@ -8,9 +8,6 @@ python/
 # the blind specimen kept in the repo
 blind.pdf
 # render byproducts, present only when the source is a local checkout
-*.otf
-*.ttf
-ssus-mark-light.pdf
 index.*
 template.pdf
 template.tex

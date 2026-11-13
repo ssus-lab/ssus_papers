@@ -12,9 +12,6 @@ __pycache__/
 !_extensions/**/*.html
 /.quarto/
 **/*.quarto_ipynb
-/*.ttf
-/*.otf
-/ssus-mark-light.pdf
 /submission/
 /_identity_strings.txt
 .pytest_cache/
