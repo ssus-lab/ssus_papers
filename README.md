@@ -13,14 +13,14 @@ into its pixi environment; the project layout is `ssus_paper_template`.
 
 Start a paper in an empty folder:
 
-    quarto use template ssus-lab/ssus_papers@v0.0.10 --no-prompt
+    quarto use template ssus-lab/ssus_papers@v0.0.11 --no-prompt
 
 It installs the three formats and copies the starter: `template.qmd`,
 renamed after the folder (`paper/paper.qmd`), `title-page.qmd`, and the four
 config files of the copies (below). Install into an existing project from a
 release tag:
 
-    quarto add ssus-lab/ssus_papers@v0.0.10
+    quarto add ssus-lab/ssus_papers@v0.0.11
 
 All three land at `_extensions/ssus-lab/<name>/`, and `quarto update
 extension ssus-lab/ssus_papers` takes a later release. The ref after `@`
@@ -172,7 +172,7 @@ the Python side of that step, a package with no dependencies beyond pandoc
 on the path (Quarto's bundled copy serves). A project installs it with pixi
 from the same tag as the formats:
 
-    pixi add --pypi ssus-papers --git https://github.com/ssus-lab/ssus_papers --tag v0.0.10 --subdirectory python
+    pixi add --pypi ssus-papers --git https://github.com/ssus-lab/ssus_papers --tag v0.0.11 --subdirectory python
 
 `Table` takes Markdown cells, already formatted, and writes one Quarto include
 holding the table as raw LaTeX, typst, and HTML under a `#tbl-` div, the

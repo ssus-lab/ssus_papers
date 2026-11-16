@@ -1,6 +1,6 @@
 title: SSUS blind manuscript format
 author: Eli Knaap
-version: 0.0.4
+version: 0.0.5
 quarto-required: ">=1.4.11"
 
 # The pdfLaTeX-safe blind manuscript — the "submission" copy of Eli's ssus

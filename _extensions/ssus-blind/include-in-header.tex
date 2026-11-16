@@ -10,6 +10,13 @@
 % --- fonts (pdfLaTeX-safe only) -----------------------------------------
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
+% U+2212, the minus sign, is the right glyph for a negative number in prose
+% and tables, and the masthead's LuaLaTeX sets it natively; pdfLaTeX's utf8
+% input stops on it ("Unicode character − (U+2212) not set up"). Declared
+% as a math minus, so a number reads the same in either copy.
+\ifdefined\DeclareUnicodeCharacter
+  \DeclareUnicodeCharacter{2212}{\ensuremath{-}}
+\fi
 
 % --- running heads (hikmah-manuscript's page styles) ---------------------
 % The FANCYPAGESTYLE definitions live in partials/before-title.tex: the

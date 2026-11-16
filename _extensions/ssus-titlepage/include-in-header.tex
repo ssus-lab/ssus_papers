@@ -8,6 +8,11 @@
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \usepackage[scaled=0.92]{helvet}
+% U+2212 as a math minus, as ssus-blind declares it: pdfLaTeX's utf8 input
+% stops on the character otherwise.
+\ifdefined\DeclareUnicodeCharacter
+  \DeclareUnicodeCharacter{2212}{\ensuremath{-}}
+\fi
 
 % The one label macro: a small sans caps line, like the brand's eyebrows.
 \newcommand{\ssustplabel}[1]{\par\medskip\noindent{\sffamily\bfseries\MakeUppercase{#1}}\par\smallskip}
