@@ -75,10 +75,19 @@
 \abslabeldelim{\quad}
 \setlength{\abstitleskip}{-\parindent}
 
-% Keywords
+% Keywords: on the abstract's measure (its left and right indents), ragged
+% right, the label run in like the abstract's. A paragraph indented by
+% \hspace wrapped its second line to the left margin, and justification
+% stretched a short list's spaces. The margins are set as \leftskip and
+% \rightskip, not by a list, whose \addvspace would cancel the -3em.
 \newenvironment{keywords}
-{\vskip -3em \hspace{\parindent}\small{\sffamily\footnotesize\bfseries\MakeUppercase{Keywords}}\quad}
-{\vskip 3em}
+{\par\vskip -3em
+ \begingroup
+ \leftskip=\absleftindent
+ \rightskip=\dimexpr\absrightindent\relax plus 1fil
+ \parindent=0pt\parfillskip=0pt plus 1fil
+ \small\noindent{\sffamily\footnotesize\bfseries\MakeUppercase{Keywords}}\quad}
+{\par\vskip 3em\endgroup}
 
 % ------------------
 % Section headings

@@ -21,7 +21,17 @@
 \vspace{4mm}
 \fi
 
-{\sffamily\bfseries\fontsize{17.5}{23}\selectfont\color{SurveyInk}$title$\par}
+% Title and subtitle set ragged right and never hyphenated: a display line
+% breaks between words (a justified 17.5 pt title broke "Regres-sion").
+% The subtitle is Libre Franklin SemiBold in Slate, as the html sets it
+% (masthead.css .ssus-subtitle).
+{\sffamily\bfseries\fontsize{17.5}{23}\selectfont\color{SurveyInk}\raggedright
+\hyphenpenalty=10000\exhyphenpenalty=10000 $title$\par}
+$if(subtitle)$
+\vspace{2mm}
+{\ssussanssemi\fontsize{12.5}{16.5}\selectfont\color{Slate}\raggedright
+\hyphenpenalty=10000\exhyphenpenalty=10000 $subtitle$\par}
+$endif$
 
 $if(by-author)$
 \vspace{4.5mm}
